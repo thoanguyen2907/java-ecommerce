@@ -8,7 +8,7 @@ import com.example.javaecommerce.model.response.OrderResponse;
 import com.example.javaecommerce.repository.OrderDetailRepository;
 import com.example.javaecommerce.repository.OrderRepository;
 import com.example.javaecommerce.service.OrderService;
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

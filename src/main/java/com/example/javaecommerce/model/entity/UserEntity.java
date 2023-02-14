@@ -15,10 +15,17 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 public class UserEntity  extends BaseEntity {
+    private String username;
     private String email;
     private String password;
 
     public UserEntity(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    public UserEntity(String username, String email, String password) {
+        this.username = username;
         this.email = email;
         this.password = password;
     }

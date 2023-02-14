@@ -6,7 +6,7 @@ import com.example.javaecommerce.model.request.RoleRequest;
 import com.example.javaecommerce.model.response.RoleResponse;
 import com.example.javaecommerce.repository.RoleRepository;
 import com.example.javaecommerce.service.RoleService;
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;

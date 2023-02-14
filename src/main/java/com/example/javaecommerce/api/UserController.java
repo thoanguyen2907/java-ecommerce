@@ -1,13 +1,9 @@
 package com.example.javaecommerce.api;
 
-
-import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.UserResponse;
 import com.example.javaecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,12 +20,12 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-    @GetMapping(path = "/pagination/{pageNum}")
+/*    @GetMapping(path = "/pagination/{pageNum}")
     public Page<UserEntity> getAllUsersByPagination(@PathVariable("pageNum") int pageNum, @Param("sortField") String sortField,
                                                     @Param("keyword") String keyword ) {
         Page<UserEntity> usersPagination = userService.getAllUsersByPagination(pageNum, sortField, keyword);
         return  usersPagination;
-    }
+    }*/
 
     public UserResponse addUser(@RequestBody UserRequest userRequest) {
         return userService.addUser(userRequest);
@@ -42,7 +38,7 @@ public class UserController {
     public UserResponse updateUser(@RequestBody UserRequest userRequest, Long id) {
         return userService.updateUser(userRequest, id);
     }
-    @GetMapping(path = "page/{pageNum}/{userPerPage}")
+/*    @GetMapping(path = "page/{pageNum}/{userPerPage}")
     public String listByPage (@PathVariable(name =  "pageNum") int pageNum, @PathVariable(name =  "userPerPage") int userPerPage) {
         Page<UserEntity> page = userService.listByPage(pageNum, userPerPage);
 
@@ -56,6 +52,6 @@ public class UserController {
         System.out.println("Pagenum =  " + page.getTotalElements());
         System.out.println("Pagenum =  " + page.getTotalPages());
         return "users";
-    }
+    }*/
 
 }

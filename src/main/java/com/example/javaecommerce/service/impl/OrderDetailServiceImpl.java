@@ -6,7 +6,7 @@ import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;
 import com.example.javaecommerce.repository.OrderDetailRepository;
 import com.example.javaecommerce.service.OrderDetailService;
-import jakarta.transaction.Transactional;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
