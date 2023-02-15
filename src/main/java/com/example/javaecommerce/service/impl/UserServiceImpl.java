@@ -12,7 +12,10 @@ import com.example.javaecommerce.service.UserService;
 
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -90,6 +93,15 @@ public class UserServiceImpl implements UserService {
                         "user with id " + id + " does not exist"
                 ));
         return Converter.toModel(userEntity, UserResponse.class);
+    }
+
+    @Override
+    public List<UserEntity> getAllUsersByPagination(int pageNo, int pageSize) {
+        //create page request object
+        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
+        Page<UserEntity> pageUserList = userRepository.findAll(pageRequest);
+        return pageUserList.getContent();
+
     }
 
 

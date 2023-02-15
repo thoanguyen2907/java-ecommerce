@@ -1,9 +1,12 @@
 package com.example.javaecommerce.api;
 
+import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.UserResponse;
 import com.example.javaecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +23,11 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
-/*    @GetMapping(path = "/pagination/{pageNum}")
-    public Page<UserEntity> getAllUsersByPagination(@PathVariable("pageNum") int pageNum, @Param("sortField") String sortField,
-                                                    @Param("keyword") String keyword ) {
-        Page<UserEntity> usersPagination = userService.getAllUsersByPagination(pageNum, sortField, keyword);
-        return  usersPagination;
-    }*/
-
+   @GetMapping(path = "/pagination")
+    public List<UserEntity> getAllUsersByPagination(@RequestParam(defaultValue = "0") Integer pageNum,
+                                                    @RequestParam(defaultValue = "5") Integer pageSize ){
+            return userService.getAllUsersByPagination(pageNum, pageSize);
+   }
     public UserResponse addUser(@RequestBody UserRequest userRequest) {
         return userService.addUser(userRequest);
     }
