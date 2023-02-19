@@ -8,26 +8,31 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
         List<UserResponse>  userResponse = userService.getAllUsers();
         return ResponseEntity.ok(userResponse);
     }
-
-   @GetMapping(path = "/pagination")
-    public List<UserEntity> getAllUsersByPagination(@RequestParam(defaultValue = "0") Integer pageNum,
-                                                    @RequestParam(defaultValue = "5") Integer pageSize ){
-            return userService.getAllUsersByPagination(pageNum, pageSize);
-   }
+    @GetMapping(path = "/pagination")
+    public ResponseEntity<?> listAllUsersByPagination( @RequestParam(required = false) String username,
+                                                       @RequestParam(defaultValue = "0") Integer page,
+                                                       @RequestParam(defaultValue = "3") Integer size ){
+        Map<String, Object> userResponses = userService.getUserByPagination(username, page, size);
+        return ResponseEntity.ok(userResponses);
+    }
+    @PostMapping
     public UserResponse addUser(@RequestBody UserRequest userRequest) {
         return userService.addUser(userRequest);
     }

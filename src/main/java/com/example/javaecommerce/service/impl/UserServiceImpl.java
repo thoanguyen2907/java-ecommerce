@@ -16,11 +16,11 @@ import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -31,18 +31,28 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
-    public static final int USERS_PER_PAGE = 4;
-
 
     @Override
     public List<UserResponse> getAllUsers() {
         List<UserEntity> userEntities = (List<UserEntity>) userRepository.findAll();
         return Converter.toList(userEntities, UserResponse.class);
     }
-
-
-    public List<RoleEntity> getAllRoles() {
-        return roleRepository.findAll();
+    @Override
+    public Map<String, Object> getUserByPagination(String username, int page, int size) {
+        List<UserEntity> userEntities = new ArrayList<UserEntity>();
+        Pageable paging = PageRequest.of(page, size);
+        Page<UserEntity> pageUsers;
+        if(username == null) pageUsers = userRepository.findAll(paging);
+        else
+            pageUsers = userRepository.findByUsername(username, paging);
+        userEntities = pageUsers.getContent();
+        List<UserResponse>  userResponses=  Converter.toList(userEntities, UserResponse.class);
+        Map<String, Object> response = new HashMap<>();
+        response.put("users", userResponses);
+        response.put("currentPage", pageUsers.getNumber());
+        response.put("totalItems", pageUsers.getTotalElements());
+        response.put("totalPages", pageUsers.getTotalPages());
+        return   response;
     }
 
     @Override
@@ -52,7 +62,7 @@ public class UserServiceImpl implements UserService {
         }
         UserEntity user = new UserEntity();
         user.setEmail(userRequest.getEmail());
-        Set<String> strRoles = userRequest.getRole();
+        Set<String> strRoles = userRequest.getRoles();
         Set<RoleEntity> roles = new HashSet<>();
         strRoles.forEach(role -> {
             switch (role) {
@@ -95,14 +105,6 @@ public class UserServiceImpl implements UserService {
         return Converter.toModel(userEntity, UserResponse.class);
     }
 
-    @Override
-    public List<UserEntity> getAllUsersByPagination(int pageNo, int pageSize) {
-        //create page request object
-        PageRequest pageRequest = PageRequest.of(pageNo, pageSize);
-        Page<UserEntity> pageUserList = userRepository.findAll(pageRequest);
-        return pageUserList.getContent();
-
-    }
 
 
 }

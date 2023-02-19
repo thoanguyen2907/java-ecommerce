@@ -7,6 +7,7 @@ import com.example.javaecommerce.model.response.UserResponse;
 
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserService {
     List<UserResponse> getAllUsers();
@@ -15,5 +16,6 @@ public interface UserService {
     void deleteUser(Long userID);
 
     UserResponse updateUser(UserRequest userRequest, Long id);
-    List<UserEntity> getAllUsersByPagination(int pageNo, int pageSize);
+
+    Map<String, Object> getUserByPagination (String username, int page, int size);
 }
