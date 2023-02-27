@@ -5,8 +5,6 @@ import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.UserResponse;
 import com.example.javaecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -44,20 +42,4 @@ public class UserController {
     public UserResponse updateUser(@RequestBody UserRequest userRequest, Long id) {
         return userService.updateUser(userRequest, id);
     }
-/*    @GetMapping(path = "page/{pageNum}/{userPerPage}")
-    public String listByPage (@PathVariable(name =  "pageNum") int pageNum, @PathVariable(name =  "userPerPage") int userPerPage) {
-        Page<UserEntity> page = userService.listByPage(pageNum, userPerPage);
-
-        List<UserEntity> listUsers = page.getContent();
-        long startCount = (pageNum -1) * userPerPage + 1;
-        long endCount = startCount + userPerPage -1;
-        if(endCount > page.getTotalElements()) {
-            endCount = page.getTotalElements();
-        }
-
-        System.out.println("Pagenum =  " + page.getTotalElements());
-        System.out.println("Pagenum =  " + page.getTotalPages());
-        return "users";
-    }*/
-
 }

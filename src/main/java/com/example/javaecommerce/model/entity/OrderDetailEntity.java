@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,13 +14,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "orders_detail")
 public class OrderDetailEntity extends BaseEntity {
-    private String image;
-    private String email;
     private float price;
     private int quantity;
     private float total;
-    @ManyToOne()
-    @JoinColumn(
-            name = "order_id")
-    private OrderEntity order;
+    @Column(name = "productId")
+    private Long productId;
+    @OneToOne
+    @JoinColumn(name= "productId")
+    private ProductEntity product;
 }

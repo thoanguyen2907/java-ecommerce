@@ -47,11 +47,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public OrderDetailResponse updateOrderDetail(OrderDetailRequest orderDetailRequest, Long id) {
         OrderDetailEntity orderDetailEntity = orderDetailRepository.findById(id)
                 .map(orderDetail -> {
-                    orderDetail.setEmail(orderDetailRequest.getEmail());
                     orderDetail.setPrice(orderDetailRequest.getPrice());
                     orderDetail.setQuantity(orderDetailRequest.getQuantity());
                     orderDetail.setTotal(orderDetailRequest.getTotal());
-                    orderDetail.setImage(orderDetailRequest.getImage());
                     return orderDetailRepository.save(orderDetail);
                 }).orElseThrow(() -> new IllegalStateException(
                         "order detail  with id " + id + " does not exist"

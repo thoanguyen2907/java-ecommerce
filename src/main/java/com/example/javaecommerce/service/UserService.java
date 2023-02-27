@@ -1,7 +1,4 @@
 package com.example.javaecommerce.service;
-
-
-import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.UserResponse;
 

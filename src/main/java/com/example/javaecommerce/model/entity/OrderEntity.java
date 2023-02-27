@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,11 +22,15 @@ public class OrderEntity extends BaseEntity {
     private String first_name;
     private String last_name;
     private String phone;
-    private float price;
-    private int quantity;
-    private boolean status;
+    private float totalPrice;
+    @Column(name = "userId")
+    private Long userId;
     @ManyToOne()
     @JoinColumn(
-            name = "user_id")
+            name = "userId")
     private UserEntity user;
+    @OneToMany()
+    @JoinColumn(name = "orders_id")
+    private List<OrderDetailEntity> orderItems;
+
 }

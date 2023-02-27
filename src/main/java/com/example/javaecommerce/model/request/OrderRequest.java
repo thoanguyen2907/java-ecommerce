@@ -1,7 +1,10 @@
 package com.example.javaecommerce.model.request;
 
+import com.example.javaecommerce.model.entity.OrderDetailEntity;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,8 +17,7 @@ public class OrderRequest {
     private String first_name;
     private String last_name;
     private String phone;
-    private float price;
-    private int quantity;
-    private boolean status;
+    private float totalPrice;
+    private List<OrderDetailEntity> orderItems;
 
 }

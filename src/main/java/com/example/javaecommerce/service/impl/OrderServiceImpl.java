@@ -28,14 +28,12 @@ public class OrderServiceImpl implements OrderService {
         List<OrderEntity> orderEntities = orderRepository.findAll();
         return Converter.toList(orderEntities, OrderResponse.class);
     }
-
     @Override
     public OrderResponse addOrder(OrderRequest orderRequest) {
         OrderEntity orderEntity = Converter.toModel(orderRequest, OrderEntity.class);
         orderRepository.save(orderEntity);
         return Converter.toModel(orderEntity, OrderResponse.class);
     }
-
     @Override
     public OrderResponse getOrderById(Long orderID) {
         OrderEntity orderEntity = orderRepository.findById(orderID).orElseThrow(() -> new IllegalStateException(
@@ -43,11 +41,10 @@ public class OrderServiceImpl implements OrderService {
         ));
         return Converter.toModel(orderEntity, OrderResponse.class);
     }
-
     @Override
     public void deleteOrder(Long orderID) throws Exception {
         OrderDetailEntity orderDetailEntity =   orderDetailRepository.findAll().stream().filter(
-                        order -> Objects.equals(order.getOrder().getId(), orderID)   )
+                        order -> Objects.equals(order.getId(), orderID)   )
                 .findFirst()
                 .orElse(null);
         if (null != orderDetailEntity) {
@@ -63,8 +60,6 @@ public class OrderServiceImpl implements OrderService {
                 .map(orderDetail -> {
                    orderDetail.setEmail(orderRequest.getEmail());
                    orderDetail.setAddress(orderRequest.getAddress());
-                   orderDetail.setQuantity(orderRequest.getQuantity());
-                   orderDetail.setPrice(orderRequest.getPrice());
                    orderDetail.setCity(orderRequest.getCity());
                    orderDetail.setCountry(orderRequest.getCountry());
                    orderDetail.setPhone(orderRequest.getPhone());

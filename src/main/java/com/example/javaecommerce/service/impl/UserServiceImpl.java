@@ -40,18 +40,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> getUserByPagination(String username, int page, int size) {
         List<UserEntity> userEntities = new ArrayList<UserEntity>();
+        //dua vao page va size => paging dua vao PageRequest.of(page, size)
         Pageable paging = PageRequest.of(page, size);
+        //pt findAll and findByUserName se tra ve Page<UserEntity>
         Page<UserEntity> pageUsers;
         if(username == null) pageUsers = userRepository.findAll(paging);
         else
             pageUsers = userRepository.findByUsername(username, paging);
+        //get list of user entities
         userEntities = pageUsers.getContent();
-        List<UserResponse>  userResponses=  Converter.toList(userEntities, UserResponse.class);
+        List<UserResponse> userResponses = Converter.toList(userEntities, UserResponse.class);
         Map<String, Object> response = new HashMap<>();
-        response.put("users", userResponses);
-        response.put("currentPage", pageUsers.getNumber());
-        response.put("totalItems", pageUsers.getTotalElements());
-        response.put("totalPages", pageUsers.getTotalPages());
+         response.put("users", userResponses);
+         response.put("currentPage", pageUsers.getNumber());
+         response.put("totalItems", pageUsers.getTotalElements());
+         response.put("totalPages", pageUsers.getTotalPages());
         return   response;
     }
 
