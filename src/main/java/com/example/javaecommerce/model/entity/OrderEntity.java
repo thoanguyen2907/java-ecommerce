@@ -23,14 +23,5 @@ public class OrderEntity extends BaseEntity {
     private String last_name;
     private String phone;
     private float totalPrice;
-    @Column(name = "userId")
-    private Long userId;
-    @ManyToOne()
-    @JoinColumn(
-            name = "userId")
-    private UserEntity user;
-    @OneToMany()
-    @JoinColumn(name = "orders_id")
-    private List<OrderDetailEntity> orderItems;
-
 }
+;

@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 public class ProductEntity extends BaseEntity {
     @NotBlank(message = "name must not be empty")
     private String name;
+    private String image;
     @NotNull
     @NotBlank(message = "brand must not be empty")
     private String brand;
@@ -33,8 +34,5 @@ public class ProductEntity extends BaseEntity {
     @JoinColumn(
             name = "categoryId")
     private CategoryEntity category;
-    @ManyToOne()
-    @JoinColumn(
-            name = "order_detail_id")
-    private OrderDetailEntity orderDetail;
+
 }

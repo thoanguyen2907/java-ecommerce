@@ -4,6 +4,7 @@ import com.example.javaecommerce.model.request.OrderRequest;
 import com.example.javaecommerce.model.response.OrderResponse;
 import com.example.javaecommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @RequestMapping(path = "api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
+    @Autowired
     private final OrderService orderService;
 
     @GetMapping
@@ -22,6 +24,7 @@ public class OrderController {
     }
     @PostMapping
     public OrderResponse addOrder(@RequestBody OrderRequest orderRequest) {
+        System.out.println(orderRequest);
         return orderService.addOrder(orderRequest);
     }
 

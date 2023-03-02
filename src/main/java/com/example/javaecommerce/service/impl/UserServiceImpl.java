@@ -27,8 +27,8 @@ import java.util.*;
 @Transactional
 
 public class UserServiceImpl implements UserService {
-
-    private final UserRepository userRepository;
+    @Autowired
+    private  UserRepository userRepository;
     @Autowired
     private RoleRepository roleRepository;
 
