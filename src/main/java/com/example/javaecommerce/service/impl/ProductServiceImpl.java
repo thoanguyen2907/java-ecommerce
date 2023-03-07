@@ -12,6 +12,7 @@ import com.example.javaecommerce.service.ProductService;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Transient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -81,6 +82,24 @@ public class ProductServiceImpl implements ProductService {
         productEntity.setRating(averageRating);
         reviewEntity.setProduct(productEntity);
         return averageRating;
+    }
+
+    @Override
+    public List<ProductResponse> getProductListByCategoryId(Long categoryId) {
+        if(categoryRepository.existsById(categoryId)){
+            throw  new RuntimeException("cant find the categrofy");
+        }
+        List<ProductEntity> productEntities = productRepository.findByCategoryId(categoryId);
+
+           return Converter.toList(productEntities, ProductResponse.class);
+    }
+
+    @Override
+    public void deleteProductsOfCategory(Long categoryId) {
+        if(categoryRepository.existsById(categoryId)){
+            throw  new RuntimeException("cant find category");
+        }
+        productRepository.deleteByCategoryId(categoryId);
     }
 
 }

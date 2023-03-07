@@ -2,6 +2,7 @@ package com.example.javaecommerce.service;
 
 import com.example.javaecommerce.model.request.ProductRequest;
 import com.example.javaecommerce.model.response.ProductResponse;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -18,4 +19,7 @@ public interface ProductService {
     ProductResponse updateProduct(ProductRequest productRequest, Long id);
 
     int calculateRating(Long productID, int rating);
+    List<ProductResponse> getProductListByCategoryId(Long categoryId);
+
+    void deleteProductsOfCategory(Long categoryId);
 }

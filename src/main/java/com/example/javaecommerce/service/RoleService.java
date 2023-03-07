@@ -15,4 +15,6 @@ public interface RoleService {
     void deleteRole(Long roleID) throws Exception;
 
     RoleResponse updateRole(RoleRequest roleRequest, Long id);
+
+    RoleResponse addRoleForUser(Long userId, RoleRequest roleRequest);
 }

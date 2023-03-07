@@ -4,6 +4,8 @@ import com.example.javaecommerce.model.base.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -30,9 +32,8 @@ public class ProductEntity extends BaseEntity {
     private int price;
     @NotNull(message= "number of stock may not be empty")
     private int count_in_stock;
-    @ManyToOne()
-    @JoinColumn(
-            name = "categoryId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id")
+    @OnDelete(action= OnDeleteAction.CASCADE)
     private CategoryEntity category;
-
 }

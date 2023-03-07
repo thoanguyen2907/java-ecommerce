@@ -34,7 +34,9 @@ public class UserEntity  extends BaseEntity {
         this.password = password;
     }
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST, CascadeType.MERGE
+    })
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -46,4 +48,13 @@ public class UserEntity  extends BaseEntity {
     @JsonIgnore
     private OrderEntity orderEntity;
 
+    public void addRole(RoleEntity role){
+        this.roles.add(role);
+        role.getUsers().add(this);
+    }
+    public void removeRole(Long roleId){
+        RoleEntity role = this.roles.stream().filter(_role -> _role.getId() == roleId).findFirst().orElse(null);
+        this.roles.remove(role);
+        role.getUsers().remove(this);
+    }
 }

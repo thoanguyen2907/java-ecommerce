@@ -4,6 +4,7 @@ import com.example.javaecommerce.model.request.ProductRequest;
 import com.example.javaecommerce.model.response.ProductResponse;
 import com.example.javaecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,5 +51,14 @@ public class ProductController {
         ProductResponse productResponse = productService.updateProduct(productRequest, id);
         return ResponseEntity.ok(productResponse);
     }
-
+    @GetMapping("/category/{categoryId}/")
+    public ResponseEntity<?> getAllProductByCategoryId(@PathVariable(value = "categoryId") Long categoryId) {
+        List<ProductResponse> productListByCategoryId = productService.getProductListByCategoryId(categoryId);
+        return ResponseEntity.ok(productListByCategoryId);
+    }
+    @DeleteMapping("/category/{categoryId}")
+    public  ResponseEntity<?> deleteAllProductOfCategory(@PathVariable(value = "categoryId") Long categoryId) {
+        productService.deleteProductsOfCategory(categoryId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

@@ -24,6 +24,13 @@ public class RoleController {
         return roleService.addRole(roleRequest);
     }
 
+    @PostMapping("/users/{userId}/")
+    public RoleResponse addRoleForUser(@PathVariable(value = "userId") Long userId,
+                                       RoleRequest roleRequest) {
+       RoleResponse role =  roleService.addRoleForUser(userId, roleRequest);
+       return role;
+    }
+
     @DeleteMapping(path = "{roleID}")
     public void deleteRole(@PathVariable("roleID") Long roleID) throws Exception {
         roleService.deleteRole(roleID);
