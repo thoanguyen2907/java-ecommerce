@@ -41,6 +41,7 @@ public class ProductController {
         int average_rating = productService.calculateRating(productID, rating);
         return average_rating;
     }
+
     @DeleteMapping(path = "{productId}")
     public void deleteProduct(@PathVariable("productId") Long productId) {
         productService.deleteProduct(productId);
@@ -51,13 +52,15 @@ public class ProductController {
         ProductResponse productResponse = productService.updateProduct(productRequest, id);
         return ResponseEntity.ok(productResponse);
     }
+
     @GetMapping("/category/{categoryId}/")
     public ResponseEntity<?> getAllProductByCategoryId(@PathVariable(value = "categoryId") Long categoryId) {
         List<ProductResponse> productListByCategoryId = productService.getProductListByCategoryId(categoryId);
         return ResponseEntity.ok(productListByCategoryId);
     }
+
     @DeleteMapping("/category/{categoryId}")
-    public  ResponseEntity<?> deleteAllProductOfCategory(@PathVariable(value = "categoryId") Long categoryId) {
+    public ResponseEntity<?> deleteAllProductOfCategory(@PathVariable(value = "categoryId") Long categoryId) {
         productService.deleteProductsOfCategory(categoryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

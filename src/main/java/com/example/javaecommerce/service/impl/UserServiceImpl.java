@@ -11,6 +11,7 @@ import com.example.javaecommerce.repository.UserRepository;
 import com.example.javaecommerce.service.UserService;
 
 import javax.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +28,17 @@ import java.util.*;
 @Transactional
 
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private  UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
+
+    private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
 
     @Override
     public List<UserResponse> getAllUsers() {
         List<UserEntity> userEntities = (List<UserEntity>) userRepository.findAll();
         return Converter.toList(userEntities, UserResponse.class);
     }
+
     @Override
     public Map<String, Object> getUserByPagination(String username, int page, int size) {
         List<UserEntity> userEntities = new ArrayList<UserEntity>();
@@ -44,18 +46,18 @@ public class UserServiceImpl implements UserService {
         Pageable paging = PageRequest.of(page, size);
         //pt findAll and findByUserName se tra ve Page<UserEntity>
         Page<UserEntity> pageUsers;
-        if(username == null) pageUsers = userRepository.findAll(paging);
+        if (username == null) pageUsers = userRepository.findAll(paging);
         else
             pageUsers = userRepository.findByUsername(username, paging);
         //get list of user entities
         userEntities = pageUsers.getContent();
         List<UserResponse> userResponses = Converter.toList(userEntities, UserResponse.class);
         Map<String, Object> response = new HashMap<>();
-         response.put("users", userResponses);
-         response.put("currentPage", pageUsers.getNumber());
-         response.put("totalItems", pageUsers.getTotalElements());
-         response.put("totalPages", pageUsers.getTotalPages());
-        return   response;
+        response.put("users", userResponses);
+        response.put("currentPage", pageUsers.getNumber());
+        response.put("totalItems", pageUsers.getTotalElements());
+        response.put("totalPages", pageUsers.getTotalPages());
+        return response;
     }
 
     @Override
@@ -85,7 +87,7 @@ public class UserServiceImpl implements UserService {
                     roles.add(userRole);
             }
         });
-        user.setRoles(roles);
+        //user.setRoles(roles);
         UserEntity result = userRepository.save(user);
         return Converter.toModel(result, UserResponse.class);
     }
@@ -107,7 +109,6 @@ public class UserServiceImpl implements UserService {
                 ));
         return Converter.toModel(userEntity, UserResponse.class);
     }
-
 
 
 }

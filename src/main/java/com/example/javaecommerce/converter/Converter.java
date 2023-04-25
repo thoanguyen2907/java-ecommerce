@@ -1,4 +1,5 @@
 package com.example.javaecommerce.converter;
+
 import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.response.UserResponse;
 import org.modelmapper.ModelMapper;
@@ -19,7 +20,7 @@ public class Converter {
         return list.stream().map(e -> toModel(e, zClass)).collect(Collectors.toList());
     }
 
-    public static  <T, Y> List<T>  toList(Page<UserEntity> pageUserList,Class<T> zClass) {
+    public static <T, Y> List<T> toList(Page<UserEntity> pageUserList, Class<T> zClass) {
         return pageUserList.stream().map(e -> toModel(e, zClass)).collect(Collectors.toList());
     }
 }

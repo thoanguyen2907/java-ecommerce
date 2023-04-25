@@ -10,6 +10,5 @@ import java.util.Set;
 public class UserRequest {
     private String email;
     private String password;
-
     private Set<String> roles;
 }

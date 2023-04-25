@@ -1,4 +1,5 @@
 package com.example.javaecommerce.security.jwt;
+
 import com.example.javaecommerce.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+
 @Component
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
@@ -15,6 +17,7 @@ public class JwtUtils {
     private String jwtSecret;
     @Value("123123")
     private int jwtExpirationMs;
+
     public String generateJwtToken(Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -26,9 +29,11 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS512, "thoanguyen")
                 .compact();
     }
+
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
     }
+
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);

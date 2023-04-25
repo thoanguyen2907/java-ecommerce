@@ -6,7 +6,9 @@ import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;
 import com.example.javaecommerce.repository.OrderDetailRepository;
 import com.example.javaecommerce.service.OrderDetailService;
+
 import javax.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.util.List;
 @Transactional
 public class OrderDetailServiceImpl implements OrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
+
     @Override
     public List<OrderDetailResponse> getAllOrderDetails() {
         List<OrderDetailEntity> orderDetailEntities = orderDetailRepository.findAll();
@@ -47,8 +50,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     public OrderDetailResponse updateOrderDetail(OrderDetailRequest orderDetailRequest, Long id) {
         OrderDetailEntity orderDetailEntity = orderDetailRepository.findById(id)
                 .map(orderDetail -> {
-                    orderDetail.setPrice(orderDetailRequest.getPrice());
-                    orderDetail.setQuantity(orderDetailRequest.getQuantity());
                     orderDetail.setTotal(orderDetailRequest.getTotal());
                     return orderDetailRepository.save(orderDetail);
                 }).orElseThrow(() -> new IllegalStateException(

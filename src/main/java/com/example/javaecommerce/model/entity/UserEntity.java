@@ -9,6 +9,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +19,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class UserEntity  extends BaseEntity {
+public class UserEntity extends BaseEntity {
     private String username;
     private String email;
     private String password;
@@ -42,17 +43,15 @@ public class UserEntity  extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "order_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
-    private OrderEntity orderEntity;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<OrderEntity> orderEntity = new ArrayList<>();
 
-    public void addRole(RoleEntity role){
+    public void addRole(RoleEntity role) {
         this.roles.add(role);
         role.getUsers().add(this);
     }
-    public void removeRole(Long roleId){
+
+    public void removeRole(Long roleId) {
         RoleEntity role = this.roles.stream().filter(_role -> _role.getId() == roleId).findFirst().orElse(null);
         this.roles.remove(role);
         role.getUsers().remove(this);

@@ -30,9 +30,11 @@ public class RoleEntity extends BaseEntity {
             CascadeType.MERGE
     }, mappedBy = "roles")
     private Set<UserEntity> users = new HashSet<>();
+
     public Set<UserEntity> getUsers() {
         return users;
     }
+
     public void setUsers(Set<UserEntity> users) {
         this.users = users;
     }

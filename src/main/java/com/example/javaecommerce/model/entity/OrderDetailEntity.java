@@ -16,14 +16,14 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "orders_detail")
+@Table(name = "order_details")
 public class OrderDetailEntity extends BaseEntity {
-    private float price;
-    private int quantity;
     private float total;
-    @OneToOne()
-    @JoinColumn(name= "productId")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
     private ProductEntity product;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)

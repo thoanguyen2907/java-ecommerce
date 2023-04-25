@@ -28,12 +28,13 @@ public class ProductEntity extends BaseEntity {
     @NotBlank(message = "description must not be empty")
     private String description;
     private int rating;
-    @NotNull(message= "price may not be empty")
+    @NotNull(message = "price may not be empty")
     private int price;
-    @NotNull(message= "number of stock may not be empty")
-    private int count_in_stock;
+    @NotNull(message = "number of stock may not be empty")
+    private int countInStock;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id")
-    @OnDelete(action= OnDeleteAction.CASCADE)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private CategoryEntity category;
 }

@@ -9,7 +9,6 @@ import java.util.List;
 public interface ProductService {
     List<ProductResponse> getAllProducts();
 
-
     ProductResponse getProductById(Long productID);
 
     void deleteProduct(Long productID);
@@ -19,6 +18,7 @@ public interface ProductService {
     ProductResponse updateProduct(ProductRequest productRequest, Long id);
 
     int calculateRating(Long productID, int rating);
+
     List<ProductResponse> getProductListByCategoryId(Long categoryId);
 
     void deleteProductsOfCategory(Long categoryId);

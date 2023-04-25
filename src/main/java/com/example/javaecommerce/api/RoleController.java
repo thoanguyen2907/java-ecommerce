@@ -14,11 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleController {
     private RoleService roleService;
+
     @GetMapping
     public ResponseEntity<?> getAllRoles() {
         List<RoleResponse> roleResponses = roleService.getAllRoles();
         return ResponseEntity.ok(roleResponses);
     }
+
     @PostMapping
     public RoleResponse addRole(@RequestBody RoleRequest roleRequest) {
         return roleService.addRole(roleRequest);
@@ -27,14 +29,15 @@ public class RoleController {
     @PostMapping("/users/{userId}/")
     public RoleResponse addRoleForUser(@PathVariable(value = "userId") Long userId,
                                        RoleRequest roleRequest) {
-       RoleResponse role =  roleService.addRoleForUser(userId, roleRequest);
-       return role;
+        RoleResponse role = roleService.addRoleForUser(userId, roleRequest);
+        return role;
     }
 
     @DeleteMapping(path = "{roleID}")
     public void deleteRole(@PathVariable("roleID") Long roleID) throws Exception {
         roleService.deleteRole(roleID);
     }
+
     @PutMapping
     public RoleResponse updateRole(@RequestBody RoleRequest roleRequest, Long id) {
         return roleService.updateRole(roleRequest, id);
