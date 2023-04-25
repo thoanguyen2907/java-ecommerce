@@ -1,6 +1,7 @@
 package com.example.javaecommerce.service.impl;
 
 import com.example.javaecommerce.converter.Converter;
+import com.example.javaecommerce.mapper.ProductMapper;
 import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.entity.ReviewEntity;
@@ -26,12 +27,12 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-
+    private final ProductMapper productMapper;
 
     @Override
     public List<ProductResponse> getAllProducts() {
         List<ProductEntity> productEntities = productRepository.findAll();
-        return Converter.toList(productEntities, ProductResponse.class);
+        return productMapper.toListProductResponse(productEntities);
     }
 
     @Override
@@ -41,8 +42,8 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new IllegalStateException(
                         "category with id " + productRequest.getCategoryId() + " does not exist"));
         productEntity.setCategory(category);
-        productRepository.save(productEntity);
-        return Converter.toModel(productEntity, ProductResponse.class);
+       var result =  productRepository.save(productEntity);
+        return productMapper.toProductResponse(result);
     }
 
     @Override
