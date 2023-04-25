@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<ProductEntity> findByCategoryId(Long categoryId);
+
     @Transactional
     void deleteByCategoryId(Long categoryId);
 }

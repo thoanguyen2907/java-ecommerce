@@ -19,19 +19,19 @@ import java.util.Date;
 @Setter
 public abstract class BaseEntity extends IdBase {
 
-    @Column(name = "createddate")
+    @Column(name = "created_date")
     @CreatedDate
     private Date createdDate;
 
-    @Column(name = "modifieddate")
+    @Column(name = "modified_date")
     @LastModifiedDate
     private Date modifiedDate;
 
-    @Column(name = "createdby")
+    @Column(name = "created_dby")
     @CreatedBy
     private String createdBy;
 
-    @Column(name = "modifiedby" )
+    @Column(name = "modified_by" )
     @LastModifiedBy
     private String modifiedBy;
 }

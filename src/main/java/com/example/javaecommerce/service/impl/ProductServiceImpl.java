@@ -9,7 +9,9 @@ import com.example.javaecommerce.model.response.ProductResponse;
 import com.example.javaecommerce.repository.CategoryRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.service.ProductService;
+
 import javax.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +52,14 @@ public class ProductServiceImpl implements ProductService {
                     product.setName(productRequest.getName());
                     product.setBrand(productRequest.getBrand());
                     product.setDescription(productRequest.getDescription());
-                    product.setCount_in_stock(productRequest.getCount_in_stock());
+                    product.setCountInStock(productRequest.getCountInStock());
                     product.setRating(productRequest.getRating());
                     return productRepository.save(product);
                 }).orElseThrow(() -> new IllegalStateException(
                         "product with id " + id + " does not exist"));
         return Converter.toModel(productEntity, ProductResponse.class);
     }
+
     @Override
     public void deleteProduct(Long productID) {
         productRepository.deleteById(productID);
@@ -71,33 +74,34 @@ public class ProductServiceImpl implements ProductService {
         return Converter.toModel(productEntity, ProductResponse.class);
 
     }
+
     @Transient
     public int calculateRating(Long productID, int rating) {
         ProductEntity productEntity = productRepository.findById(productID).orElseThrow(() -> new IllegalStateException(
                 "product with id " + " does not exist"
         ));
-       ReviewEntity reviewEntity = new ReviewEntity();
+        ReviewEntity reviewEntity = new ReviewEntity();
         int currentRating = productEntity.getRating();
-        int averageRating =  (currentRating + rating) / 2;
+        int averageRating = (currentRating + rating) / 2;
         productEntity.setRating(averageRating);
-        reviewEntity.setProduct(productEntity);
+        // reviewEntity.setProduct(productEntity);
         return averageRating;
     }
 
     @Override
     public List<ProductResponse> getProductListByCategoryId(Long categoryId) {
-        if(categoryRepository.existsById(categoryId)){
-            throw  new RuntimeException("cant find the categrofy");
+        if (categoryRepository.existsById(categoryId)) {
+            throw new RuntimeException("cant find the categrofy");
         }
         List<ProductEntity> productEntities = productRepository.findByCategoryId(categoryId);
 
-           return Converter.toList(productEntities, ProductResponse.class);
+        return Converter.toList(productEntities, ProductResponse.class);
     }
 
     @Override
     public void deleteProductsOfCategory(Long categoryId) {
-        if(categoryRepository.existsById(categoryId)){
-            throw  new RuntimeException("cant find category");
+        if (categoryRepository.existsById(categoryId)) {
+            throw new RuntimeException("cant find category");
         }
         productRepository.deleteByCategoryId(categoryId);
     }

@@ -22,9 +22,9 @@ public class OrderController {
         List<OrderResponse> orderResponse = orderService.getAllOrders();
         return ResponseEntity.ok(orderResponse);
     }
+
     @PostMapping
     public OrderResponse addOrder(@RequestBody OrderRequest orderRequest) {
-        System.out.println(orderRequest);
         return orderService.addOrder(orderRequest);
     }
 
@@ -32,6 +32,7 @@ public class OrderController {
     public void deleteOrder(@PathVariable("orderId") Long orderId) throws Exception {
         orderService.deleteOrder(orderId);
     }
+
     @PutMapping
     public OrderResponse updateOrder(@RequestBody OrderRequest orderRequest, Long id) {
         return orderService.updateOrder(orderRequest, id);

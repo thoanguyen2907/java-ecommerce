@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -18,10 +19,16 @@ public class OrderEntity extends BaseEntity {
     private String city;
     private String country;
     private String email;
-    private String postal_code;
-    private String first_name;
-    private String last_name;
+    private String postalCode;
+    private String firstName;
+    private String lastName;
     private String phone;
     private float totalPrice;
-}
-;
+    @OneToMany(mappedBy = "order",
+    fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<OrderDetailEntity> orderDetails = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+};

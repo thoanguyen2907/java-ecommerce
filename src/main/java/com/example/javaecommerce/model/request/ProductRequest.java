@@ -11,6 +11,6 @@ public class ProductRequest {
     private String description;
     private int rating;
     private int price;
-    private int count_in_stock;
+    private int countInStock;
     private Long categoryId;
 }
