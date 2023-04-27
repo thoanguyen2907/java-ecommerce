@@ -1,4 +1,4 @@
-package com.example.javaecommerce.service;
+package com.example.javaecommerce.services;
 
 import com.example.javaecommerce.model.request.RoleRequest;
 import com.example.javaecommerce.model.response.RoleResponse;
@@ -10,9 +10,9 @@ public interface RoleService {
 
     RoleResponse addRole(RoleRequest role);
 
-    RoleResponse getRoleById(Long roleID);
+    RoleResponse getRoleById(Long roleId);
 
-    void deleteRole(Long roleID) throws Exception;
+    void deleteRole(Long roleId) throws Exception;
 
     RoleResponse updateRole(RoleRequest roleRequest, Long id);
 

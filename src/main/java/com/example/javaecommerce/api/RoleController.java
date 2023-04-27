@@ -2,7 +2,7 @@ package com.example.javaecommerce.api;
 
 import com.example.javaecommerce.model.request.RoleRequest;
 import com.example.javaecommerce.model.response.RoleResponse;
-import com.example.javaecommerce.service.RoleService;
+import com.example.javaecommerce.services.RoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +33,9 @@ public class RoleController {
         return role;
     }
 
-    @DeleteMapping(path = "{roleID}")
-    public void deleteRole(@PathVariable("roleID") Long roleID) throws Exception {
-        roleService.deleteRole(roleID);
+    @DeleteMapping(path = "{roleId}")
+    public void deleteRole(@PathVariable("roleId") Long roleId) throws Exception {
+        roleService.deleteRole(roleId);
     }
 
     @PutMapping

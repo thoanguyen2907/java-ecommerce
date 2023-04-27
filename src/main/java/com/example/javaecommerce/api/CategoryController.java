@@ -3,13 +3,12 @@ package com.example.javaecommerce.api;
 import com.example.javaecommerce.model.request.CategoryRequest;
 import com.example.javaecommerce.model.response.CategoryResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
-import com.example.javaecommerce.service.CategoryService;
+import com.example.javaecommerce.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/v1/category")
@@ -17,11 +16,7 @@ import java.util.List;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    //    @GetMapping
-//    public ResponseEntity<?> getAllCategories() {
-//        List<CategoryResponse> categoryResponses = categoryService.getAllCategories();
-//        return ResponseEntity.ok(categoryResponses);
-//    }
+
     @GetMapping
     public PaginationPage<CategoryResponse> getAllCategoriesPagination(@RequestParam(name = "offset", defaultValue = "1") final Integer offset,
                                                                        @RequestParam(name = "limit", defaultValue = "10") final Integer limit) {
@@ -30,8 +25,8 @@ public class CategoryController {
     }
 
     @GetMapping(path = "{categoryId}")
-    public CategoryResponse getCategoryById(@PathVariable("categoryId") Long categoryID) {
-        return categoryService.getCategoryById(categoryID);
+    public CategoryResponse getCategoryById(@PathVariable("categoryId") Long categoryId) {
+        return categoryService.getCategoryById(categoryId);
     }
 
     @PostMapping

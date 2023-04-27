@@ -2,7 +2,8 @@ package com.example.javaecommerce.api;
 
 import com.example.javaecommerce.model.request.ProductRequest;
 import com.example.javaecommerce.model.response.ProductResponse;
-import com.example.javaecommerce.service.ProductService;
+import com.example.javaecommerce.pagination.PaginationPage;
+import com.example.javaecommerce.services.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +20,15 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<?> getAllProducts() {
-        List<ProductResponse> productResponses = productService.getAllProducts();
+    public ResponseEntity<?> getAllProducts(@RequestParam(name = "offset", defaultValue = "1") final Integer offset,
+                                            @RequestParam(name = "limit", defaultValue = "3") final Integer limit) {
+        PaginationPage<ProductResponse> productResponses = productService.getAllProducts(offset, limit);
         return ResponseEntity.ok(productResponses);
     }
 
     @GetMapping(path = "{productId}")
-    public ResponseEntity<?> getProductById(@PathVariable("productId") Long productID) {
-        ProductResponse productResponse = productService.getProductById(productID);
+    public ResponseEntity<?> getProductById(@PathVariable("productId") Long productId) {
+        ProductResponse productResponse = productService.getProductById(productId);
         return ResponseEntity.ok(productResponse);
     }
 
@@ -37,9 +39,9 @@ public class ProductController {
     }
 
     @PostMapping(value = "/rating/{productId}/{rating}")
-    public int calculateAverageRating(@PathVariable("productId") Long productID, @PathVariable("rating") int rating) {
-        int average_rating = productService.calculateRating(productID, rating);
-        return average_rating;
+    public int calculateAverageRating(@PathVariable("productId") Long productId, @PathVariable("rating") int rating) {
+        int averageRating = productService.calculateRating(productId, rating);
+        return averageRating;
     }
 
     @DeleteMapping(path = "{productId}")

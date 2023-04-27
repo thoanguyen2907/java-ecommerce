@@ -1,11 +1,11 @@
-package com.example.javaecommerce.service;
+package com.example.javaecommerce.services;
 
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.UserResponse;
+import com.example.javaecommerce.pagination.PaginationPage;
 
 
 import java.util.List;
-import java.util.Map;
 
 public interface UserService {
     List<UserResponse> getAllUsers();
@@ -16,5 +16,5 @@ public interface UserService {
 
     UserResponse updateUser(UserRequest userRequest, Long id);
 
-    Map<String, Object> getUserByPagination(String username, int page, int size);
+    PaginationPage<UserResponse> getUserByPagination(Integer offset, Integer limited);
 }

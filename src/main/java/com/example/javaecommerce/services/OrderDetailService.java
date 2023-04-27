@@ -1,4 +1,4 @@
-package com.example.javaecommerce.service;
+package com.example.javaecommerce.services;
 
 import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;
@@ -10,9 +10,9 @@ public interface OrderDetailService {
 
     OrderDetailResponse addOrderDetail(OrderDetailRequest orderDetailRequest);
 
-    OrderDetailResponse getOrderDetailById(Long orderDetailID);
+    OrderDetailResponse getOrderDetailById(Long orderDetailId);
 
-    void deleteOrderDetail(Long orderDetailID) throws Exception;
+    void deleteOrderDetail(Long orderDetailId) throws Exception;
 
     OrderDetailResponse updateOrderDetail(OrderDetailRequest orderDetailRequest, Long id);
 }

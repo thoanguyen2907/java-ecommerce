@@ -1,6 +1,7 @@
-package com.example.javaecommerce.service.impl;
+package com.example.javaecommerce.services.impl;
 
 import com.example.javaecommerce.converter.Converter;
+import com.example.javaecommerce.exception.ResourceNotFoundException;
 import com.example.javaecommerce.model.entity.*;
 import com.example.javaecommerce.model.request.CartItemRequest;
 import com.example.javaecommerce.model.request.OrderRequest;
@@ -9,7 +10,7 @@ import com.example.javaecommerce.repository.OrderDetailRepository;
 import com.example.javaecommerce.repository.OrderRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.repository.UserRepository;
-import com.example.javaecommerce.service.OrderService;
+import com.example.javaecommerce.services.OrderService;
 
 import javax.transaction.Transactional;
 
@@ -84,9 +85,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderResponse getOrderById(Long orderID) {
-        OrderEntity orderEntity = orderRepository.findById(orderID).orElseThrow(() -> new IllegalStateException(
-                "category with id" + " does not exist"
-        ));
+        OrderEntity orderEntity = orderRepository.findById(orderID)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderID));
         return Converter.toModel(orderEntity, OrderResponse.class);
     }
 
@@ -116,9 +116,7 @@ public class OrderServiceImpl implements OrderService {
                     orderDetail.setFirstName(orderRequest.getFirstName());
                     orderDetail.setPostalCode(orderRequest.getPostalCode());
                     return orderRepository.save(orderDetail);
-                }).orElseThrow(() -> new IllegalStateException(
-                        "order detail  with id " + id + " does not exist"
-                ));
+                }).orElseThrow(() -> new ResourceNotFoundException("Order", "id" , id));
         return Converter.toModel(orderEntity, OrderResponse.class);
     }
 }

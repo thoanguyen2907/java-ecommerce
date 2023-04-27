@@ -1,16 +1,14 @@
 package com.example.javaecommerce.api;
 
-import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.UserResponse;
-import com.example.javaecommerce.service.UserService;
+import com.example.javaecommerce.pagination.PaginationPage;
+import com.example.javaecommerce.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/users")
@@ -18,7 +16,6 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
 
-    // @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<?> getAllUsers() {
         List<UserResponse> userResponse = userService.getAllUsers();
@@ -26,10 +23,9 @@ public class UserController {
     }
 
     @GetMapping(path = "/pagination")
-    public ResponseEntity<?> listAllUsersByPagination(@RequestParam(required = false) String username,
-                                                      @RequestParam(defaultValue = "0") Integer page,
-                                                      @RequestParam(defaultValue = "3") Integer size) {
-        Map<String, Object> userResponses = userService.getUserByPagination(username, page, size);
+    public ResponseEntity<?> listAllUsersByPagination(@RequestParam(name = "offset", defaultValue = "1") final Integer offset,
+                                                      @RequestParam(name = "limit", defaultValue = "10") final Integer limit) {
+        PaginationPage<UserResponse> userResponses = userService.getUserByPagination(offset, limit);
         return ResponseEntity.ok(userResponses);
     }
 

@@ -1,4 +1,4 @@
-package com.example.javaecommerce.service;
+package com.example.javaecommerce.services;
 
 import com.example.javaecommerce.model.request.CategoryRequest;
 import com.example.javaecommerce.model.response.CategoryResponse;
@@ -13,9 +13,9 @@ public interface CategoryService {
 
     CategoryResponse addCategory(CategoryRequest category);
 
-    CategoryResponse getCategoryById(Long categoryID);
+    CategoryResponse getCategoryById(Long categoryId);
 
-    void deleteCategory(Long categoryID) throws Exception;
+    void deleteCategory(Long categoryId) throws Exception;
 
     CategoryResponse updateCategory(CategoryRequest categoryRequest, Long id);
 

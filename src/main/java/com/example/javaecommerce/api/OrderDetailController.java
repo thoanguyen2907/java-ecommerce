@@ -2,7 +2,7 @@ package com.example.javaecommerce.api;
 
 import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;
-import com.example.javaecommerce.service.OrderDetailService;
+import com.example.javaecommerce.services.OrderDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

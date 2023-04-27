@@ -1,23 +1,23 @@
-package com.example.javaecommerce.service;
+package com.example.javaecommerce.services;
 
 import com.example.javaecommerce.model.request.ProductRequest;
 import com.example.javaecommerce.model.response.ProductResponse;
-import org.springframework.http.ResponseEntity;
+import com.example.javaecommerce.pagination.PaginationPage;
 
 import java.util.List;
 
 public interface ProductService {
-    List<ProductResponse> getAllProducts();
+    PaginationPage<ProductResponse> getAllProducts(Integer offset, Integer limit);
 
-    ProductResponse getProductById(Long productID);
+    ProductResponse getProductById(Long productId);
 
-    void deleteProduct(Long productID);
+    void deleteProduct(Long productId);
 
     ProductResponse addProduct(ProductRequest productRequest);
 
     ProductResponse updateProduct(ProductRequest productRequest, Long id);
 
-    int calculateRating(Long productID, int rating);
+    int calculateRating(Long productId, int rating);
 
     List<ProductResponse> getProductListByCategoryId(Long categoryId);
 

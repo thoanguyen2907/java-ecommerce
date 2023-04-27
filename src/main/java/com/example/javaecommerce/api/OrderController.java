@@ -2,7 +2,7 @@ package com.example.javaecommerce.api;
 
 import com.example.javaecommerce.model.request.OrderRequest;
 import com.example.javaecommerce.model.response.OrderResponse;
-import com.example.javaecommerce.service.OrderService;
+import com.example.javaecommerce.services.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

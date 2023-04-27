@@ -1,11 +1,12 @@
-package com.example.javaecommerce.service.impl;
+package com.example.javaecommerce.services.impl;
 
 import com.example.javaecommerce.converter.Converter;
+import com.example.javaecommerce.exception.ResourceNotFoundException;
 import com.example.javaecommerce.model.entity.OrderDetailEntity;
 import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;
 import com.example.javaecommerce.repository.OrderDetailRepository;
-import com.example.javaecommerce.service.OrderDetailService;
+import com.example.javaecommerce.services.OrderDetailService;
 
 import javax.transaction.Transactional;
 
@@ -34,16 +35,15 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     }
 
     @Override
-    public OrderDetailResponse getOrderDetailById(Long orderDetailID) {
-        OrderDetailEntity orderDetailEntity = orderDetailRepository.findById(orderDetailID).orElseThrow(() -> new IllegalStateException(
-                "order with id" + " does not exist"
-        ));
+    public OrderDetailResponse getOrderDetailById(Long orderDetailId) {
+        OrderDetailEntity orderDetailEntity = orderDetailRepository.findById(orderDetailId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderDetailId));
         return Converter.toModel(orderDetailEntity, OrderDetailResponse.class);
     }
 
     @Override
-    public void deleteOrderDetail(Long orderDetailID) throws Exception {
-        orderDetailRepository.deleteById(orderDetailID);
+    public void deleteOrderDetail(Long orderDetailId) throws Exception {
+        orderDetailRepository.deleteById(orderDetailId);
     }
 
     @Override
@@ -52,9 +52,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                 .map(orderDetail -> {
                     orderDetail.setTotal(orderDetailRequest.getTotal());
                     return orderDetailRepository.save(orderDetail);
-                }).orElseThrow(() -> new IllegalStateException(
-                        "order detail  with id " + id + " does not exist"
-                ));
+                }).orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
         return Converter.toModel(orderDetailEntity, OrderDetailResponse.class);
     }
 }

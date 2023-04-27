@@ -1,4 +1,4 @@
-package com.example.javaecommerce.service;
+package com.example.javaecommerce.services;
 
 import com.example.javaecommerce.model.request.OrderRequest;
 import com.example.javaecommerce.model.response.OrderResponse;
@@ -12,7 +12,7 @@ public interface OrderService {
 
     OrderResponse getOrderById(Long orderID);
 
-    void deleteOrder(Long orderDetailID) throws Exception;
+    void deleteOrder(Long orderDetailId) throws Exception;
 
     OrderResponse updateOrder(OrderRequest orderRequest, Long id);
 }

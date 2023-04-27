@@ -25,9 +25,7 @@ public class PaginationPage<T> {
         this.records = records;
     }
 
-    public PaginationPage() {
-        this(0, 0, 0, Collections.emptyList());
-    }
+    public PaginationPage() {}
 
     public long getTotalRecords() {
         return totalRecords == 0L ? records.size() : totalRecords;
