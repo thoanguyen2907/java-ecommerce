@@ -1,27 +1,25 @@
-package com.example.javaecommerce.service.impl;
+package com.example.javaecommerce.services.impl;
 
-import com.example.javaecommerce.converter.Converter;
+import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.mapper.UserMapper;
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.RoleEntity;
 import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.UserResponse;
+import com.example.javaecommerce.pagination.OffsetPageRequest;
+import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.repository.RoleRepository;
 import com.example.javaecommerce.repository.UserRepository;
-import com.example.javaecommerce.service.UserService;
+import com.example.javaecommerce.services.UserService;
 
 import javax.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -32,32 +30,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
+    private final UserMapper userMapper;
 
     @Override
     public List<UserResponse> getAllUsers() {
         List<UserEntity> userEntities = (List<UserEntity>) userRepository.findAll();
-        return Converter.toList(userEntities, UserResponse.class);
-    }
-
-    @Override
-    public Map<String, Object> getUserByPagination(String username, int page, int size) {
-        List<UserEntity> userEntities = new ArrayList<UserEntity>();
-        //dua vao page va size => paging dua vao PageRequest.of(page, size)
-        Pageable paging = PageRequest.of(page, size);
-        //pt findAll and findByUserName se tra ve Page<UserEntity>
-        Page<UserEntity> pageUsers;
-        if (username == null) pageUsers = userRepository.findAll(paging);
-        else
-            pageUsers = userRepository.findByUsername(username, paging);
-        //get list of user entities
-        userEntities = pageUsers.getContent();
-        List<UserResponse> userResponses = Converter.toList(userEntities, UserResponse.class);
-        Map<String, Object> response = new HashMap<>();
-        response.put("users", userResponses);
-        response.put("currentPage", pageUsers.getNumber());
-        response.put("totalItems", pageUsers.getTotalElements());
-        response.put("totalPages", pageUsers.getTotalPages());
-        return response;
+        return userMapper.toListUserResponse(userEntities);
     }
 
     @Override
@@ -73,23 +51,23 @@ public class UserServiceImpl implements UserService {
             switch (role) {
                 case "admin":
                     RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                            .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not found."));
+                            .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_ADMIN));
                     roles.add(adminRole);
                     break;
                 case "moderator":
                     RoleEntity therapistRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                            .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not found."));
+                            .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_MODERATOR));
                     roles.add(therapistRole);
                     break;
                 default:
                     RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                            .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User Role not found."));
+                            .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_USER));
                     roles.add(userRole);
             }
         });
         //user.setRoles(roles);
         UserEntity result = userRepository.save(user);
-        return Converter.toModel(result, UserResponse.class);
+        return userMapper.toUserResponse(result);
     }
 
     @Override
@@ -104,10 +82,24 @@ public class UserServiceImpl implements UserService {
                     user.setEmail(userRequest.getEmail());
                     user.setPassword(userRequest.getPassword());
                     return userRepository.save(user);
-                }).orElseThrow(() -> new IllegalStateException(
-                        "user with id " + id + " does not exist"
-                ));
-        return Converter.toModel(userEntity, UserResponse.class);
+                }).orElseThrow(() -> new ResourceNotFoundException("user", "id", id));
+        return userMapper.toUserResponse(userEntity);
+    }
+
+    @Override
+    public PaginationPage<UserResponse> getUserByPagination(Integer offset, Integer limited) {
+        var pageable = new OffsetPageRequest(offset, limited);
+        var userList = userRepository.findAll(pageable);
+        var userResponse = userList
+                .getContent()
+                .stream()
+                .map(item -> userMapper.toUserResponse(item))
+                .collect(Collectors.toList());
+        return new PaginationPage<UserResponse>()
+                .setOffset(userList.getNumber())
+                .setTotalRecords(userList.getTotalElements())
+                .setRecords(userResponse)
+                .setLimit(userList.getSize());
     }
 
 
