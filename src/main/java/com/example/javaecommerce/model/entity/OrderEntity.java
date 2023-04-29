@@ -25,7 +25,7 @@ public class OrderEntity extends BaseEntity {
     private String phone;
     private float totalPrice;
     @OneToMany(mappedBy = "order",
-    fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    fetch = FetchType.LAZY)
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

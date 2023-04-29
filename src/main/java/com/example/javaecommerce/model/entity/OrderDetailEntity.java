@@ -24,9 +24,8 @@ public class OrderDetailEntity extends BaseEntity {
     @JoinColumn(name = "product_id")
     private ProductEntity product;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JsonIgnore
     private OrderEntity order;
 }

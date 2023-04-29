@@ -19,8 +19,7 @@ import javax.persistence.ManyToOne;
 public class ReviewEntity extends BaseEntity {
     private int rating;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private ProductEntity product;
 }

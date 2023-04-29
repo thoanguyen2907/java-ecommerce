@@ -14,8 +14,6 @@ import com.example.javaecommerce.repository.CategoryRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.services.ProductService;
 
-import javax.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Transient;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;

@@ -8,8 +8,6 @@ import com.example.javaecommerce.model.response.OrderDetailResponse;
 import com.example.javaecommerce.repository.OrderDetailRepository;
 import com.example.javaecommerce.services.OrderDetailService;
 
-import javax.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +15,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class OrderDetailServiceImpl implements OrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
 

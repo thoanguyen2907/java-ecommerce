@@ -12,8 +12,6 @@ import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.repository.UserRepository;
 import com.example.javaecommerce.services.OrderService;
 
-import javax.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,6 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;

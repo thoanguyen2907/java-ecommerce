@@ -39,8 +39,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
-
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -138,10 +136,11 @@ public class UserServiceImpl implements UserService {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        return new JwtResponse(jwt, userEntity.getId() ,userEntity.getUsername(), userEntity.getEmail());
+        return new JwtResponse(jwt, userEntity.getId() ,userEntity.getUsername(), userEntity.getEmail(), roles);
     }
 
     @Override
+    @Transactional
     public UserResponse registerUser(SignupRequest signupRequest) {
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
          throw  new RuntimeException("Username already taken");

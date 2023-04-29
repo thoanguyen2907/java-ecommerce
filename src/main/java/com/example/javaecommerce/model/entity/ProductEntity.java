@@ -33,8 +33,7 @@ public class ProductEntity extends BaseEntity {
     @NotNull(message = "number of stock may not be empty")
     private int countInStock;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
     private CategoryEntity category;
 }

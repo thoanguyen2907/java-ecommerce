@@ -10,7 +10,6 @@ import com.example.javaecommerce.repository.RoleRepository;
 import com.example.javaecommerce.repository.UserRepository;
 import com.example.javaecommerce.services.RoleService;
 
-import javax.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
