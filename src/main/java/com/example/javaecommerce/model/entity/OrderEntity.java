@@ -1,6 +1,7 @@
 package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.base.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,8 +25,8 @@ public class OrderEntity extends BaseEntity {
     private String lastName;
     private String phone;
     private float totalPrice;
-    @OneToMany(mappedBy = "order",
-    fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -2,6 +2,7 @@ package com.example.javaecommerce.services.impl;
 
 import com.example.javaecommerce.converter.Converter;
 import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.mapper.OrderMapper;
 import com.example.javaecommerce.model.entity.*;
 import com.example.javaecommerce.model.request.CartItemRequest;
 import com.example.javaecommerce.model.request.OrderRequest;
@@ -12,6 +13,7 @@ import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.repository.UserRepository;
 import com.example.javaecommerce.services.OrderService;
 
+import com.example.javaecommerce.utils.JWTSecurity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderDetailRepository orderDetailRepository;
 
+    private final OrderMapper orderMapper;
+
     @Override
     public List<OrderResponse> getAllOrders() {
         List<OrderEntity> orderEntities = orderRepository.findAll();
@@ -37,9 +41,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse addOrder(OrderRequest orderRequest) {
         OrderEntity order = new OrderEntity();
-        Long userId = Long.valueOf(orderRequest.getUserId());
-        //user tạm thời, sẽ sử dụng jwt lấy user principal bằng securityContext
-        UserEntity user = userRepository.findById(userId).get();
+        //su dung jwt security de find out user
+        var signedUser = JWTSecurity.getJWTUserInfo().orElseThrow();
+        var user = userRepository.findById(signedUser.getId()).orElseThrow();
+
         order.setUser(user);
         order.setAddress(orderRequest.getAddress());
         order.setCity(orderRequest.getCity());
@@ -61,23 +66,14 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setOrder(order);
             orderDetail.setProduct(product);
             orderDetail.setTotal(cartItem.getPrice() * cartItem.getQuantity());
+            orderDetailRepository.save(orderDetail);
             orderDetails.add(orderDetail);
+
         }
         order.setOrderDetails(orderDetails);
         orderRepository.save(order);
         //fix: se ap dung mapstruct cho truong hop loc du lieu
-        OrderResponse response = new OrderResponse(
-                order.getAddress(),
-                order.getCity(),
-                order.getCountry(),
-                order.getEmail(),
-                order.getPostalCode(),
-                order.getFirstName(),
-                order.getLastName(),
-                order.getPhone(),
-                order.getOrderDetails()
-        );
-        return response;
+       return orderMapper.toOrderResponse(order);
     }
 
     @Override

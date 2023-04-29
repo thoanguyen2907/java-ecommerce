@@ -44,6 +44,7 @@ public class UserEntity extends BaseEntity {
     private Set<RoleEntity> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<OrderEntity> orderEntity = new ArrayList<>();
 
     public void addRole(RoleEntity role) {
