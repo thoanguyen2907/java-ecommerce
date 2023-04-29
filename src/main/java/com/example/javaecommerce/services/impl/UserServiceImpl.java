@@ -6,8 +6,10 @@ import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.RoleEntity;
 import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.LoginRequest;
+import com.example.javaecommerce.model.request.SignupRequest;
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.JwtResponse;
+import com.example.javaecommerce.model.response.MessageResponse;
 import com.example.javaecommerce.model.response.UserResponse;
 import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.pagination.PaginationPage;
@@ -28,6 +30,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -46,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
 
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     @Override
     public List<UserResponse> getAllUsers() {
@@ -135,6 +139,48 @@ public class UserServiceImpl implements UserService {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
         return new JwtResponse(jwt, userEntity.getId() ,userEntity.getUsername(), userEntity.getEmail());
+    }
+
+    @Override
+    public UserResponse registerUser(SignupRequest signupRequest) {
+        if (userRepository.existsByUsername(signupRequest.getUsername())) {
+         throw  new RuntimeException("Username already taken");
+        }
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
+            throw  new RuntimeException("Email already taken");
+        }
+        UserEntity user = new UserEntity(signupRequest.getUsername(),
+                signupRequest.getEmail(),
+                passwordEncoder.encode(signupRequest.getPassword()));
+        Set<String> strRoles = signupRequest.getRole();
+        Set<RoleEntity> roles = new HashSet<>();
+        if (strRoles == null) {
+            RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error : Role is not found "));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
+                        roles.add(adminRole);
+                        break;
+                    case "mod":
+                        RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
+                        roles.add(modRole);
+                        break;
+                    default:
+                        RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
+                        roles.add(userRole);
+                }
+            });
+        }
+        user.setRoles(roles);
+        UserEntity result = userRepository.save(user);
+        return userMapper.toUserResponse(result);
     }
 
     private Authentication authenticateUser(final LoginRequest loginRequest) {
