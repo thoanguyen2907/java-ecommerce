@@ -1,4 +1,4 @@
-package com.example.javaecommerce.api;
+package com.example.javaecommerce.controller;
 
 import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;

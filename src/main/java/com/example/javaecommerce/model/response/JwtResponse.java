@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -23,6 +25,12 @@ public class JwtResponse {
         this.username = username;
         this.email = email;
         this.roles = roles;
+    }
+    public JwtResponse(String accessToken, Long id, String username, String email) {
+        this.token = accessToken;
+        this.id = id;
+        this.username = username;
+        this.email = email;
     }
 
     public String getAccessToken() {

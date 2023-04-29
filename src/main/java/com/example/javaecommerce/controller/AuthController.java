@@ -1,4 +1,4 @@
-package com.example.javaecommerce.api;
+package com.example.javaecommerce.controller;
 
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.RoleEntity;
@@ -11,11 +11,13 @@ import com.example.javaecommerce.repository.RoleRepository;
 import com.example.javaecommerce.repository.UserRepository;
 import com.example.javaecommerce.security.jwt.JwtUtils;
 import com.example.javaecommerce.security.services.UserDetailsImpl;
+import com.example.javaecommerce.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,30 +42,18 @@ public class AuthController {
     UserRepository userRepository;
     @Autowired
     RoleRepository roleRepository;
+
+    @Autowired
+    UserService userService;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
     JwtUtils jwtUtils;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
-                        loginRequest.getPassword())
-        );
-        //Noted 54 56
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                roles));
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+      var jwtResponse = userService.login(loginRequest);
+        return ResponseEntity.ok(jwtResponse);
     }
 
     @PostMapping("/signup")

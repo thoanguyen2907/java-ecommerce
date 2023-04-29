@@ -5,18 +5,31 @@ import com.example.javaecommerce.mapper.UserMapper;
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.RoleEntity;
 import com.example.javaecommerce.model.entity.UserEntity;
+import com.example.javaecommerce.model.request.LoginRequest;
 import com.example.javaecommerce.model.request.UserRequest;
+import com.example.javaecommerce.model.response.JwtResponse;
 import com.example.javaecommerce.model.response.UserResponse;
 import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.repository.RoleRepository;
 import com.example.javaecommerce.repository.UserRepository;
+import com.example.javaecommerce.security.jwt.JwtUtils;
+import com.example.javaecommerce.security.services.UserDetailsImpl;
 import com.example.javaecommerce.services.UserService;
 
 import javax.transaction.Transactional;
 
+import com.example.javaecommerce.utils.JWTSecurity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +44,9 @@ public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    private final AuthenticationManager authenticationManager;
 
+    private final JwtUtils jwtUtils;
     @Override
     public List<UserResponse> getAllUsers() {
         List<UserEntity> userEntities = (List<UserEntity>) userRepository.findAll();
@@ -102,5 +117,37 @@ public class UserServiceImpl implements UserService {
                 .setLimit(userList.getSize());
     }
 
+    @Override
+    public UserResponse aboutMe() {
+        var signedInUser = JWTSecurity.getJWTUserInfo().orElseThrow();
+        var userEntity = userRepository.findById(signedInUser.getId()).orElseThrow(() -> new RuntimeException("cant find user!"));
+        return userMapper.toUserResponse(userEntity);
+    }
+    @Override
+    public JwtResponse login(@RequestBody LoginRequest loginRequest) {
+        var userEntity = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User not found."));
+        var authentication = authenticateUser(loginRequest);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return new JwtResponse(jwt, userEntity.getId() ,userEntity.getUsername(), userEntity.getEmail());
+    }
+
+    private Authentication authenticateUser(final LoginRequest loginRequest) {
+        try {
+            return authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException e) {
+            throw new RuntimeException("Unauthorization ! ");
+        }
+    }
 
 }
