@@ -28,13 +28,11 @@ public class OrderEntity extends BaseEntity {
     private String lastName;
     private String phone;
     private float totalPrice;
+
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY,  cascade = CascadeType.ALL)
-    @JsonIgnore
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-    @JsonIdentityReference(alwaysAsId = true)
     private UserEntity user;
 };

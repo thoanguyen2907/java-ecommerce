@@ -25,7 +25,6 @@ import java.util.Set;
 public class UserEntity extends BaseEntity {
     private String username;
     private String email;
-    @JsonIgnore
     private String password;
 
     public UserEntity(String email, String password) {
@@ -45,8 +44,7 @@ public class UserEntity extends BaseEntity {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
-    @JsonIdentityReference(alwaysAsId = true)
+    @JsonIgnore
     private Set<RoleEntity> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -1,6 +1,5 @@
 package com.example.javaecommerce.services.impl;
 
-import com.example.javaecommerce.converter.Converter;
 import com.example.javaecommerce.exception.ResourceNotFoundException;
 import com.example.javaecommerce.mapper.OrderMapper;
 import com.example.javaecommerce.mapper.UserMapper;
@@ -55,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
         order.setFirstName(orderRequest.getFirstName());
         order.setLastName(orderRequest.getLastName());
         order.setPostalCode(orderRequest.getPostalCode());
+        order.setPhone(orderRequest.getPhone());
 
         List<OrderDetailEntity> orderDetails = order.getOrderDetails();
 
