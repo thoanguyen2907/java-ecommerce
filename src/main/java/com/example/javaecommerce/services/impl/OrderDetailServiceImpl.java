@@ -2,6 +2,7 @@ package com.example.javaecommerce.services.impl;
 
 import com.example.javaecommerce.converter.Converter;
 import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.mapper.OrderDetailMapper;
 import com.example.javaecommerce.model.entity.OrderDetailEntity;
 import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;
@@ -18,24 +19,25 @@ import java.util.List;
 public class OrderDetailServiceImpl implements OrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
 
+    private final OrderDetailMapper orderDetailMapper;
     @Override
     public List<OrderDetailResponse> getAllOrderDetails() {
         List<OrderDetailEntity> orderDetailEntities = orderDetailRepository.findAll();
-        return Converter.toList(orderDetailEntities, OrderDetailResponse.class);
+        return orderDetailMapper.toListOrderDetailResponse(orderDetailEntities);
     }
 
     @Override
     public OrderDetailResponse addOrderDetail(OrderDetailRequest orderDetailRequest) {
         OrderDetailEntity orderDetailEntity = Converter.toModel(orderDetailRequest, OrderDetailEntity.class);
         orderDetailRepository.save(orderDetailEntity);
-        return Converter.toModel(orderDetailEntity, OrderDetailResponse.class);
+        return orderDetailMapper.toOrderDetailResponse(orderDetailEntity);
     }
 
     @Override
     public OrderDetailResponse getOrderDetailById(Long orderDetailId) {
         OrderDetailEntity orderDetailEntity = orderDetailRepository.findById(orderDetailId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderDetailId));
-        return Converter.toModel(orderDetailEntity, OrderDetailResponse.class);
+        return orderDetailMapper.toOrderDetailResponse(orderDetailEntity);
     }
 
     @Override
@@ -50,6 +52,6 @@ public class OrderDetailServiceImpl implements OrderDetailService {
                     orderDetail.setTotal(orderDetailRequest.getTotal());
                     return orderDetailRepository.save(orderDetail);
                 }).orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
-        return Converter.toModel(orderDetailEntity, OrderDetailResponse.class);
+        return orderDetailMapper.toOrderDetailResponse(orderDetailEntity);
     }
 }

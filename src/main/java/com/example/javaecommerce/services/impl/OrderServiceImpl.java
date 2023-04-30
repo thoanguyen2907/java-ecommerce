@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponse> getAllOrders() {
         List<OrderEntity> orderEntities = orderRepository.findAll();
-        return Converter.toList(orderEntities, OrderResponse.class);
+        return orderMapper.toListOrderResponse(orderEntities);
     }
 
     @Override
@@ -44,8 +44,6 @@ public class OrderServiceImpl implements OrderService {
         //su dung jwt security de find out user
         var signedUser = JWTSecurity.getJWTUserInfo().orElseThrow();
         var user = userRepository.findById(signedUser.getId()).orElseThrow();
-
-        order.setUser(user);
         order.setAddress(orderRequest.getAddress());
         order.setCity(orderRequest.getCity());
         order.setCountry(orderRequest.getCountry());
@@ -71,8 +69,8 @@ public class OrderServiceImpl implements OrderService {
 
         }
         order.setOrderDetails(orderDetails);
+        order.setUser(user);
         orderRepository.save(order);
-        //fix: se ap dung mapstruct cho truong hop loc du lieu
        return orderMapper.toOrderResponse(order);
     }
 
@@ -80,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderResponse getOrderById(Long orderID) {
         OrderEntity orderEntity = orderRepository.findById(orderID)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderID));
-        return Converter.toModel(orderEntity, OrderResponse.class);
+        return orderMapper.toOrderResponse(orderEntity);
     }
 
     @Override
@@ -110,6 +108,6 @@ public class OrderServiceImpl implements OrderService {
                     orderDetail.setPostalCode(orderRequest.getPostalCode());
                     return orderRepository.save(orderDetail);
                 }).orElseThrow(() -> new ResourceNotFoundException("Order", "id" , id));
-        return Converter.toModel(orderEntity, OrderResponse.class);
+        return orderMapper.toOrderResponse(orderEntity);
     }
 }

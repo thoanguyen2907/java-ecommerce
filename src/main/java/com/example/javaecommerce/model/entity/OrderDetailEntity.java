@@ -26,6 +26,5 @@ public class OrderDetailEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id", nullable = false)
-    @JsonIgnore
     private OrderEntity order;
 }

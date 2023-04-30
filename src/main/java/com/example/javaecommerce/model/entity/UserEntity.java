@@ -46,15 +46,4 @@ public class UserEntity extends BaseEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<OrderEntity> orderEntity = new ArrayList<>();
-
-    public void addRole(RoleEntity role) {
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
-
-    public void removeRole(Long roleId) {
-        RoleEntity role = this.roles.stream().filter(_role -> _role.getId() == roleId).findFirst().orElse(null);
-        this.roles.remove(role);
-        role.getUsers().remove(this);
-    }
 }

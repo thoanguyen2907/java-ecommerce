@@ -30,6 +30,6 @@ public class OrderEntity extends BaseEntity {
     private List<OrderDetailEntity> orderDetails = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 };

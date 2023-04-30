@@ -21,6 +21,6 @@ public class OrderResponse {
     private String firstName;
     private String lastName;
     private String phone;
+    private UserEntity user;
     private List<OrderDetailEntity> orderDetails;
-
 }
