@@ -3,6 +3,7 @@ package com.example.javaecommerce.services.impl;
 import com.example.javaecommerce.converter.Converter;
 import com.example.javaecommerce.exception.ResourceNotFoundException;
 import com.example.javaecommerce.mapper.OrderMapper;
+import com.example.javaecommerce.mapper.UserMapper;
 import com.example.javaecommerce.model.entity.*;
 import com.example.javaecommerce.model.request.CartItemRequest;
 import com.example.javaecommerce.model.request.OrderRequest;
@@ -31,6 +32,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
 
     private final OrderMapper orderMapper;
+    private  final UserMapper userMapper;
 
     @Override
     public List<OrderResponse> getAllOrders() {
@@ -44,6 +46,7 @@ public class OrderServiceImpl implements OrderService {
         //su dung jwt security de find out user
         var signedUser = JWTSecurity.getJWTUserInfo().orElseThrow();
         var user = userRepository.findById(signedUser.getId()).orElseThrow();
+        var userResponse = userMapper.toUserResponse(user);
         order.setAddress(orderRequest.getAddress());
         order.setCity(orderRequest.getCity());
         order.setCountry(orderRequest.getCountry());
