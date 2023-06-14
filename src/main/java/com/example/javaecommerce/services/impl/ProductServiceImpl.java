@@ -7,6 +7,7 @@ import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.entity.ReviewEntity;
 import com.example.javaecommerce.model.request.ProductRequest;
+import com.example.javaecommerce.model.request.RequestDTO;
 import com.example.javaecommerce.model.response.ProductResponse;
 import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.pagination.PaginationPage;
@@ -14,9 +15,13 @@ import com.example.javaecommerce.repository.CategoryRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.services.ProductService;
 
+import com.example.javaecommerce.utils.FilterSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +33,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final FilterSpecification<ProductEntity> filterSpecification;
 
     @Override
     public PaginationPage<ProductResponse> getAllProducts(Integer offset, Integer limit) {
@@ -46,11 +52,31 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public PaginationPage<ProductResponse> getAllProductsWithSearch(Integer offset, Integer limit,
+                                                                    RequestDTO requestDTO) {
+        var pageable = new OffsetPageRequest(offset, limit);
+        Specification<ProductEntity> productSpecification = filterSpecification
+                .getSearchSpecification(requestDTO.getSearchRequestDTOList(), requestDTO.getGlobalOperator());
+
+        var productList = productRepository.findAll(productSpecification, pageable);
+        var productResponse = productList.getContent()
+                .stream()
+                .map(item -> productMapper.toProductResponse(item))
+                .collect(Collectors.toList());
+
+        return new PaginationPage<ProductResponse>()
+                .setLimit(productList.getSize())
+                .setTotalRecords(productList.getTotalElements())
+                .setOffset(productList.getSize())
+                .setRecords(productResponse);
+    }
+
+    @Override
     public ProductResponse addProduct(ProductRequest productRequest) {
         ProductEntity productEntity = Converter.toModel(productRequest, ProductEntity.class);
         CategoryEntity category = categoryRepository.findById(productRequest.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("category", "id", productRequest.getCategoryId())
-                        );
+                );
         productEntity.setCategory(category);
         var result = productRepository.save(productEntity);
         return productMapper.toProductResponse(result);

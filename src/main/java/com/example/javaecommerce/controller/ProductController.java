@@ -10,6 +10,7 @@ import com.example.javaecommerce.services.ProductService;
 import com.example.javaecommerce.utils.FilterSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,10 +77,10 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/specification")
-    public List<ProductEntity> getStudents(@RequestBody RequestDTO requestDTO) {
-        Specification<ProductEntity> productSpecification = filterSpecification
-                .getSearchSpecification(requestDTO.getSearchRequestDTOList(), requestDTO.getGlobalOperator());
-        return productRepository.findAll(productSpecification);
+    @PostMapping("/search/specification")
+    public PaginationPage<ProductResponse> getAllProductsWithSearch(@RequestBody RequestDTO requestDTO,
+                                                                    @RequestParam(name = "offset", defaultValue = "0") final Integer offset,
+                                                                    @RequestParam(name = "limit", defaultValue = "3") final Integer limit) {
+        return productService.getAllProductsWithSearch(offset, limit, requestDTO);
     }
 }
