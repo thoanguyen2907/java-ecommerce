@@ -31,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
 
     private final OrderMapper orderMapper;
-    private  final UserMapper userMapper;
+    private final UserMapper userMapper;
 
     @Override
     public List<OrderResponse> getAllOrders() {
@@ -45,7 +45,6 @@ public class OrderServiceImpl implements OrderService {
         //su dung jwt security de find out user
         var signedUser = JWTSecurity.getJWTUserInfo().orElseThrow();
         var user = userRepository.findById(signedUser.getId()).orElseThrow();
-        var userResponse = userMapper.toUserResponse(user);
         order.setAddress(orderRequest.getAddress());
         order.setCity(orderRequest.getCity());
         order.setCountry(orderRequest.getCountry());
@@ -69,12 +68,11 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setTotal(cartItem.getPrice() * cartItem.getQuantity());
             orderDetailRepository.save(orderDetail);
             orderDetails.add(orderDetail);
-
         }
         order.setOrderDetails(orderDetails);
         order.setUser(user);
         orderRepository.save(order);
-       return orderMapper.toOrderResponse(order);
+        return orderMapper.toOrderResponse(order);
     }
 
     @Override
@@ -110,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
                     orderDetail.setFirstName(orderRequest.getFirstName());
                     orderDetail.setPostalCode(orderRequest.getPostalCode());
                     return orderRepository.save(orderDetail);
-                }).orElseThrow(() -> new ResourceNotFoundException("Order", "id" , id));
+                }).orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
         return orderMapper.toOrderResponse(orderEntity);
     }
 }

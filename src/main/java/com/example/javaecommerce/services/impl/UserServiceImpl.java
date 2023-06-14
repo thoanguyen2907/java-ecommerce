@@ -151,7 +151,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = new UserEntity(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()));
-        Set<String> strRoles = signupRequest.getRole();
+        Set<String> strRoles = signupRequest.getRoles();
         Set<RoleEntity> roles = new HashSet<>();
         if (strRoles == null) {
             RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)

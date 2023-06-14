@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.http.MediaType;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Getter
@@ -40,3 +43,5 @@ public class ProductEntity extends BaseEntity {
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 }
+
+

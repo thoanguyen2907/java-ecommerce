@@ -1,10 +1,16 @@
 package com.example.javaecommerce.controller;
 
+import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.request.ProductRequest;
+import com.example.javaecommerce.model.request.RequestDTO;
 import com.example.javaecommerce.model.response.ProductResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
+import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.services.ProductService;
+import com.example.javaecommerce.utils.FilterSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +24,12 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
+    private final FilterSpecification<ProductEntity> filterSpecification;
+
+    private final ProductRepository productRepository;
+
     @GetMapping
-    public ResponseEntity<?> getAllProducts(@RequestParam(name = "offset", defaultValue = "1") final Integer offset,
+    public ResponseEntity<?> getAllProducts(@RequestParam(name = "offset", defaultValue = "0") final Integer offset,
                                             @RequestParam(name = "limit", defaultValue = "3") final Integer limit) {
         PaginationPage<ProductResponse> productResponses = productService.getAllProducts(offset, limit);
         return ResponseEntity.ok(productResponses);
@@ -64,5 +74,12 @@ public class ProductController {
     public ResponseEntity<?> deleteAllProductOfCategory(@PathVariable(value = "categoryId") Long categoryId) {
         productService.deleteProductsOfCategory(categoryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/specification")
+    public List<ProductEntity> getStudents(@RequestBody RequestDTO requestDTO) {
+        Specification<ProductEntity> productSpecification = filterSpecification
+                .getSearchSpecification(requestDTO.getSearchRequestDTOList(), requestDTO.getGlobalOperator());
+        return productRepository.findAll(productSpecification);
     }
 }
