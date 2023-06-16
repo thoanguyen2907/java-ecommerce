@@ -13,33 +13,29 @@ import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
-    private Long id;
+    private final  Long id;
 
-    private String username;
-
-    private String email;
+    private final String email;
     @JsonIgnore
-    private String password;
+    private final String password;
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password,
-                           Collection<? extends GrantedAuthority> authorities) {
+    public UserDetailsImpl(final Long id, final String email, final String password,
+                           final Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.username = username;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(UserEntity user) {
+    public static UserDetailsImpl build(final UserEntity user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
 
         return new UserDetailsImpl(
                 user.getId(),
-                user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
                 authorities);
@@ -57,15 +53,13 @@ public class UserDetailsImpl implements UserDetails {
     public String getEmail() {
         return email;
     }
-
+    @Override
+    public String getUsername() {
+        return email;
+    }
     @Override
     public String getPassword() {
         return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
     }
 
     @Override
@@ -89,7 +83,7 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())

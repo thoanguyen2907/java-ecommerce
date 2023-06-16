@@ -1,5 +1,6 @@
 package com.example.javaecommerce.pagination;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -24,11 +25,6 @@ public class OffsetPageRequest implements Pageable, Serializable {
         this.offset = offset;
         this.sort = sort;
     }
-//    public OffsetPageRequest(final long limit, final long offset) {
-//        this.limit = limit;
-//       this.offset = offset;
-//       this.sort = Sort.unsorted();
-//    }
 
     public OffsetPageRequest(final long limit, final long offset) {
         this(offset, limit, Sort.unsorted());
@@ -71,7 +67,7 @@ public class OffsetPageRequest implements Pageable, Serializable {
     }
 
     @Override
-    public Pageable withPage(int pageNumber) {
+    public Pageable withPage(final int pageNumber) {
         return new OffsetPageRequest(pageNumber, this.getPageSize(), this.getSort());
     }
 
@@ -81,10 +77,16 @@ public class OffsetPageRequest implements Pageable, Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
-        if (!(o instanceof OffsetPageRequest that)) return false;
-        return limit == that.limit && offset == that.offset && Objects.equals(sort, that.sort);
+        if (!(o instanceof OffsetPageRequest)) return false;
+        OffsetPageRequest that = (OffsetPageRequest) o;
+
+        return new EqualsBuilder()
+                .append(limit, that.limit)
+                .append(offset, that.offset)
+                .append(sort, that.sort)
+                .isEquals();
     }
 
     @Override

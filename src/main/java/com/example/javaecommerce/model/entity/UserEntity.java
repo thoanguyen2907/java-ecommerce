@@ -2,11 +2,10 @@ package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,12 +23,12 @@ public class UserEntity extends BaseEntity {
     private String email;
     private String password;
 
-    public UserEntity(String email, String password) {
+    public UserEntity(final String email, final String password) {
         this.email = email;
         this.password = password;
     }
 
-    public UserEntity(String username, String email, String password) {
+    public UserEntity(final String username, final String email, final String password) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -41,19 +40,10 @@ public class UserEntity extends BaseEntity {
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JsonIgnore
     private Set<RoleEntity> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<OrderEntity> orderEntity = new ArrayList<>();
-
-    public void addRole(RoleEntity role) {
-        this.roles.add(role);
-        role.getUsers().add(this);
-    }
-
-    public void removeRole(Long roleId) {
-        RoleEntity role = this.roles.stream().filter(_role -> _role.getId() == roleId).findFirst().orElse(null);
-        this.roles.remove(role);
-        role.getUsers().remove(this);
-    }
 }

@@ -1,13 +1,18 @@
 package com.example.javaecommerce.services;
 
 import com.example.javaecommerce.model.request.ProductRequest;
+import com.example.javaecommerce.model.request.RequestDTO;
 import com.example.javaecommerce.model.response.ProductResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
+
 
 import java.util.List;
 
 public interface ProductService {
     PaginationPage<ProductResponse> getAllProducts(Integer offset, Integer limit);
+
+    PaginationPage<ProductResponse> getAllProductsWithSearch(Integer offset, Integer limit,
+                                                             RequestDTO requestDTO);
 
     ProductResponse getProductById(Long productId);
 

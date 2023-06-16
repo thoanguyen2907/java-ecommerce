@@ -2,6 +2,8 @@ package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.base.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,13 +31,14 @@ public class RoleEntity extends BaseEntity {
             CascadeType.PERSIST,
             CascadeType.MERGE
     }, mappedBy = "roles")
+    @JsonIgnore
     private Set<UserEntity> users = new HashSet<>();
 
     public Set<UserEntity> getUsers() {
         return users;
     }
 
-    public void setUsers(Set<UserEntity> users) {
+    public void setUsers(final Set<UserEntity> users) {
         this.users = users;
     }
 }

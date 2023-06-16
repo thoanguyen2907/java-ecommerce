@@ -7,6 +7,7 @@ import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.entity.ReviewEntity;
 import com.example.javaecommerce.model.request.ProductRequest;
+import com.example.javaecommerce.model.request.RequestDTO;
 import com.example.javaecommerce.model.response.ProductResponse;
 import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.pagination.PaginationPage;
@@ -14,26 +15,28 @@ import com.example.javaecommerce.repository.CategoryRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.services.ProductService;
 
-import javax.transaction.Transactional;
-
+import com.example.javaecommerce.utils.FilterSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Transient;
+
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
+    private final FilterSpecification<ProductEntity> filterSpecification;
 
     @Override
-    public PaginationPage<ProductResponse> getAllProducts(Integer offset, Integer limit) {
+    public PaginationPage<ProductResponse> getAllProducts(final Integer offset, final Integer limit) {
         var pageable = new OffsetPageRequest(offset, limit);
         var productList = productRepository.findAll(pageable);
         var productResponse = productList
@@ -49,18 +52,38 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse addProduct(ProductRequest productRequest) {
+    public PaginationPage<ProductResponse> getAllProductsWithSearch(final Integer offset, final Integer limit,
+                                                                    final RequestDTO requestDTO) {
+        var pageable = new OffsetPageRequest(offset, limit);
+        Specification<ProductEntity> productSpecification = filterSpecification
+                .getSearchSpecification(requestDTO.getSearchRequestDTOList(), requestDTO.getGlobalOperator());
+
+        var productList = productRepository.findAll(productSpecification, pageable);
+        var productResponse = productList.getContent()
+                .stream()
+                .map(item -> productMapper.toProductResponse(item))
+                .collect(Collectors.toList());
+
+        return new PaginationPage<ProductResponse>()
+                .setLimit(productList.getSize())
+                .setTotalRecords(productList.getTotalElements())
+                .setOffset(productList.getSize())
+                .setRecords(productResponse);
+    }
+
+    @Override
+    public ProductResponse addProduct(final ProductRequest productRequest) {
         ProductEntity productEntity = Converter.toModel(productRequest, ProductEntity.class);
         CategoryEntity category = categoryRepository.findById(productRequest.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("category", "id", productRequest.getCategoryId())
-                        );
+                );
         productEntity.setCategory(category);
         var result = productRepository.save(productEntity);
         return productMapper.toProductResponse(result);
     }
 
     @Override
-    public ProductResponse updateProduct(ProductRequest productRequest, Long id) {
+    public ProductResponse updateProduct(final ProductRequest productRequest, final Long id) {
         ProductEntity productEntity = productRepository.findById(id)
                 .map(product -> {
                     product.setName(productRequest.getName());
@@ -74,12 +97,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(Long productId) {
+    public void deleteProduct(final Long productId) {
         productRepository.deleteById(productId);
     }
 
     @Override
-    public ProductResponse getProductById(Long productId) {
+    public ProductResponse getProductById(final Long productId) {
         ProductEntity productEntity = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("product", "id", productId));
 
@@ -88,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transient
-    public int calculateRating(Long productId, int rating) {
+    public int calculateRating(final Long productId, final int rating) {
         ProductEntity productEntity = productRepository.findById(productId).orElseThrow(() -> new IllegalStateException(
                 "product with id " + " does not exist"
         ));
@@ -101,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getProductListByCategoryId(Long categoryId) {
+    public List<ProductResponse> getProductListByCategoryId(final Long categoryId) {
         if (categoryRepository.existsById(categoryId)) {
             throw new RuntimeException("cant find the categrofy");
         }
@@ -111,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductsOfCategory(Long categoryId) {
+    public void deleteProductsOfCategory(final Long categoryId) {
         if (categoryRepository.existsById(categoryId)) {
             throw new RuntimeException("cant find category");
         }

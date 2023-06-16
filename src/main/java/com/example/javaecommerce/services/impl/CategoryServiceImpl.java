@@ -12,8 +12,6 @@ import com.example.javaecommerce.repository.CategoryRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.services.CategoryService;
 
-import javax.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +21,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
@@ -36,7 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public PaginationPage<CategoryResponse> getAllCategoriesPagination(Integer offset, Integer limited) {
+    public PaginationPage<CategoryResponse> getAllCategoriesPagination(final Integer offset, final Integer limited) {
         var pageable = new OffsetPageRequest(offset, limited);
         var categoryList = categoryRepository.findAll(pageable);
         var categoryResponse = categoryList
@@ -52,21 +49,21 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse addCategory(CategoryRequest categoryRequest) {
+    public CategoryResponse addCategory(final CategoryRequest categoryRequest) {
         CategoryEntity categoryEntity = Converter.toModel(categoryRequest, CategoryEntity.class);
         categoryRepository.save(categoryEntity);
         return categoryMapper.toCategoryResponse(categoryEntity);
     }
 
     @Override
-    public CategoryResponse getCategoryById(Long categoryId) {
+    public CategoryResponse getCategoryById(final Long categoryId) {
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         return categoryMapper.toCategoryResponse(categoryEntity);
     }
 
     @Override
-    public void deleteCategory(Long categoryId) throws Exception {
+    public void deleteCategory(final Long categoryId) throws Exception {
         ProductEntity productEntity = productRepository.findAll()
                 .stream()
                 .filter(
@@ -81,7 +78,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse updateCategory(CategoryRequest categoryRequest, Long id) {
+    public CategoryResponse updateCategory(final CategoryRequest categoryRequest, final Long id) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
                 .map(category -> {
                     category.setName(categoryRequest.getName());

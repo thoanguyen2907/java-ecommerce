@@ -1,6 +1,5 @@
 package com.example.javaecommerce.mapper;
 
-import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.response.ProductResponse;
 import org.mapstruct.Mapper;

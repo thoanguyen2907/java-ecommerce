@@ -1,7 +1,7 @@
 package com.example.javaecommerce.services.impl;
 
-import com.example.javaecommerce.converter.Converter;
 import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.mapper.OrderMapper;
 import com.example.javaecommerce.model.entity.*;
 import com.example.javaecommerce.model.request.CartItemRequest;
 import com.example.javaecommerce.model.request.OrderRequest;
@@ -12,8 +12,7 @@ import com.example.javaecommerce.repository.ProductRepository;
 import com.example.javaecommerce.repository.UserRepository;
 import com.example.javaecommerce.services.OrderService;
 
-import javax.transaction.Transactional;
-
+import com.example.javaecommerce.utils.JWTSecurity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,6 @@ import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
@@ -31,19 +29,20 @@ public class OrderServiceImpl implements OrderService {
     private final ProductRepository productRepository;
     private final OrderDetailRepository orderDetailRepository;
 
+    private final OrderMapper orderMapper;
+
     @Override
     public List<OrderResponse> getAllOrders() {
         List<OrderEntity> orderEntities = orderRepository.findAll();
-        return Converter.toList(orderEntities, OrderResponse.class);
+        return orderMapper.toListOrderResponse(orderEntities);
     }
 
     @Override
-    public OrderResponse addOrder(OrderRequest orderRequest) {
+    public OrderResponse addOrder(final OrderRequest orderRequest) {
         OrderEntity order = new OrderEntity();
-        Long userId = Long.valueOf(orderRequest.getUserId());
-        //user tạm thời, sẽ sử dụng jwt lấy user principal bằng securityContext
-        UserEntity user = userRepository.findById(userId).get();
-        order.setUser(user);
+        //su dung jwt security de find out user
+        var signedUser = JWTSecurity.getJWTUserInfo().orElseThrow();
+        var user = userRepository.findById(signedUser.getId()).orElseThrow();
         order.setAddress(orderRequest.getAddress());
         order.setCity(orderRequest.getCity());
         order.setCountry(orderRequest.getCountry());
@@ -52,6 +51,7 @@ public class OrderServiceImpl implements OrderService {
         order.setFirstName(orderRequest.getFirstName());
         order.setLastName(orderRequest.getLastName());
         order.setPostalCode(orderRequest.getPostalCode());
+        order.setPhone(orderRequest.getPhone());
 
         List<OrderDetailEntity> orderDetails = order.getOrderDetails();
 
@@ -64,34 +64,24 @@ public class OrderServiceImpl implements OrderService {
             orderDetail.setOrder(order);
             orderDetail.setProduct(product);
             orderDetail.setTotal(cartItem.getPrice() * cartItem.getQuantity());
+            orderDetailRepository.save(orderDetail);
             orderDetails.add(orderDetail);
         }
         order.setOrderDetails(orderDetails);
+        order.setUser(user);
         orderRepository.save(order);
-        //fix: se ap dung mapstruct cho truong hop loc du lieu
-        OrderResponse response = new OrderResponse(
-                order.getAddress(),
-                order.getCity(),
-                order.getCountry(),
-                order.getEmail(),
-                order.getPostalCode(),
-                order.getFirstName(),
-                order.getLastName(),
-                order.getPhone(),
-                order.getOrderDetails()
-        );
-        return response;
+        return orderMapper.toOrderResponse(order);
     }
 
     @Override
-    public OrderResponse getOrderById(Long orderID) {
+    public OrderResponse getOrderById(final Long orderID) {
         OrderEntity orderEntity = orderRepository.findById(orderID)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderID));
-        return Converter.toModel(orderEntity, OrderResponse.class);
+        return orderMapper.toOrderResponse(orderEntity);
     }
 
     @Override
-    public void deleteOrder(Long orderID) throws Exception {
+    public void deleteOrder(final Long orderID) throws Exception {
         OrderDetailEntity orderDetailEntity = orderDetailRepository.findAll().stream().filter(
                         order -> Objects.equals(order.getId(), orderID))
                 .findFirst()
@@ -104,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse updateOrder(OrderRequest orderRequest, Long id) {
+    public OrderResponse updateOrder(final OrderRequest orderRequest, final Long id) {
         OrderEntity orderEntity = orderRepository.findById(id)
                 .map(orderDetail -> {
                     orderDetail.setEmail(orderRequest.getEmail());
@@ -116,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
                     orderDetail.setFirstName(orderRequest.getFirstName());
                     orderDetail.setPostalCode(orderRequest.getPostalCode());
                     return orderRepository.save(orderDetail);
-                }).orElseThrow(() -> new ResourceNotFoundException("Order", "id" , id));
-        return Converter.toModel(orderEntity, OrderResponse.class);
+                }).orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+        return orderMapper.toOrderResponse(orderEntity);
     }
 }

@@ -1,11 +1,9 @@
 package com.example.javaecommerce.model.response;
 
-import com.example.javaecommerce.model.entity.OrderDetailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -16,12 +14,10 @@ public class OrderResponse {
     private String city;
     private String country;
     private String email;
-    private String postal_code;
-    private String first_name;
-    private String last_name;
+    private String postalCode;
+    private String firstName;
+    private String lastName;
     private String phone;
-    //  private float subtotal;
-    //private boolean status;
-    private List<OrderDetailEntity> orderDetails = new ArrayList<OrderDetailEntity>();
-
+    private UserResponse user;
+    private List<OrderDetailResponse> orderDetails;
 }

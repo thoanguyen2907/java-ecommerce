@@ -1,4 +1,4 @@
-package com.example.javaecommerce.api;
+package com.example.javaecommerce.controller;
 
 import com.example.javaecommerce.model.request.OrderDetailRequest;
 import com.example.javaecommerce.model.response.OrderDetailResponse;
@@ -22,17 +22,17 @@ public class OrderDetailController {
     }
 
     @PostMapping
-    public OrderDetailResponse addOrderDetail(@RequestBody OrderDetailRequest orderDetailRequest) {
+    public OrderDetailResponse addOrderDetail(@RequestBody final OrderDetailRequest orderDetailRequest) {
         return orderDetailService.addOrderDetail(orderDetailRequest);
     }
 
     @DeleteMapping(path = "{orderDetailId}")
-    public void deleteOrderDetail(@PathVariable("orderDetailId") Long orderDetailId) throws Exception {
+    public void deleteOrderDetail(@PathVariable("orderDetailId") final Long orderDetailId) throws Exception {
         orderDetailService.deleteOrderDetail(orderDetailId);
     }
 
     @PutMapping
-    public OrderDetailResponse updateOrderDetail(@RequestBody OrderDetailRequest orderDetailRequest, Long id) {
+    public OrderDetailResponse updateOrderDetail(@RequestBody final OrderDetailRequest orderDetailRequest, final Long id) {
         return orderDetailService.updateOrderDetail(orderDetailRequest, id);
     }
 }
