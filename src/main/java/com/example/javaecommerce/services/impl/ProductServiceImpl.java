@@ -18,10 +18,10 @@ import com.example.javaecommerce.services.ProductService;
 import com.example.javaecommerce.utils.FilterSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.annotation.Transient;
-import org.springframework.data.domain.Page;
+
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
     private final FilterSpecification<ProductEntity> filterSpecification;
 
     @Override
-    public PaginationPage<ProductResponse> getAllProducts(Integer offset, Integer limit) {
+    public PaginationPage<ProductResponse> getAllProducts(final Integer offset, final Integer limit) {
         var pageable = new OffsetPageRequest(offset, limit);
         var productList = productRepository.findAll(pageable);
         var productResponse = productList
@@ -52,8 +52,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public PaginationPage<ProductResponse> getAllProductsWithSearch(Integer offset, Integer limit,
-                                                                    RequestDTO requestDTO) {
+    public PaginationPage<ProductResponse> getAllProductsWithSearch(final Integer offset, final Integer limit,
+                                                                    final RequestDTO requestDTO) {
         var pageable = new OffsetPageRequest(offset, limit);
         Specification<ProductEntity> productSpecification = filterSpecification
                 .getSearchSpecification(requestDTO.getSearchRequestDTOList(), requestDTO.getGlobalOperator());
@@ -72,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse addProduct(ProductRequest productRequest) {
+    public ProductResponse addProduct(final ProductRequest productRequest) {
         ProductEntity productEntity = Converter.toModel(productRequest, ProductEntity.class);
         CategoryEntity category = categoryRepository.findById(productRequest.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("category", "id", productRequest.getCategoryId())
@@ -83,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse updateProduct(ProductRequest productRequest, Long id) {
+    public ProductResponse updateProduct(final ProductRequest productRequest, final Long id) {
         ProductEntity productEntity = productRepository.findById(id)
                 .map(product -> {
                     product.setName(productRequest.getName());
@@ -97,12 +97,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(Long productId) {
+    public void deleteProduct(final Long productId) {
         productRepository.deleteById(productId);
     }
 
     @Override
-    public ProductResponse getProductById(Long productId) {
+    public ProductResponse getProductById(final Long productId) {
         ProductEntity productEntity = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("product", "id", productId));
 
@@ -111,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Transient
-    public int calculateRating(Long productId, int rating) {
+    public int calculateRating(final Long productId, final int rating) {
         ProductEntity productEntity = productRepository.findById(productId).orElseThrow(() -> new IllegalStateException(
                 "product with id " + " does not exist"
         ));
@@ -124,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getProductListByCategoryId(Long categoryId) {
+    public List<ProductResponse> getProductListByCategoryId(final Long categoryId) {
         if (categoryRepository.existsById(categoryId)) {
             throw new RuntimeException("cant find the categrofy");
         }
@@ -134,7 +134,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProductsOfCategory(Long categoryId) {
+    public void deleteProductsOfCategory(final Long categoryId) {
         if (categoryRepository.existsById(categoryId)) {
             throw new RuntimeException("cant find category");
         }

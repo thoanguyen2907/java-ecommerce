@@ -9,7 +9,7 @@ import com.example.javaecommerce.model.request.LoginRequest;
 import com.example.javaecommerce.model.request.SignupRequest;
 import com.example.javaecommerce.model.request.UserRequest;
 import com.example.javaecommerce.model.response.JwtResponse;
-import com.example.javaecommerce.model.response.MessageResponse;
+
 import com.example.javaecommerce.model.response.UserResponse;
 import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.pagination.PaginationPage;
@@ -23,8 +23,7 @@ import javax.transaction.Transactional;
 
 import com.example.javaecommerce.utils.JWTSecurity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,12 +50,12 @@ public class UserServiceImpl implements UserService {
     private final JwtUtils jwtUtils;
     @Override
     public List<UserResponse> getAllUsers() {
-        List<UserEntity> userEntities = (List<UserEntity>) userRepository.findAll();
+        List<UserEntity> userEntities =  userRepository.findAll();
         return userMapper.toListUserResponse(userEntities);
     }
 
     @Override
-    public UserResponse addUser(UserRequest userRequest) {
+    public UserResponse addUser(final UserRequest userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new IllegalStateException("Email is already existed !!");
         }
@@ -82,18 +81,18 @@ public class UserServiceImpl implements UserService {
                     roles.add(userRole);
             }
         });
-        //user.setRoles(roles);
+
         UserEntity result = userRepository.save(user);
         return userMapper.toUserResponse(result);
     }
 
     @Override
-    public void deleteUser(Long userID) {
+    public void deleteUser(final Long userID) {
         userRepository.deleteById(userID);
     }
 
     @Override
-    public UserResponse updateUser(UserRequest userRequest, Long id) {
+    public UserResponse updateUser(final UserRequest userRequest, final Long id) {
         UserEntity userEntity = userRepository.findById(id)
                 .map(user -> {
                     user.setEmail(userRequest.getEmail());
@@ -104,7 +103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginationPage<UserResponse> getUserByPagination(Integer offset, Integer limited) {
+    public PaginationPage<UserResponse> getUserByPagination(final Integer offset, final Integer limited) {
         var pageable = new OffsetPageRequest(offset, limited);
         var userList = userRepository.findAll(pageable);
         var userResponse = userList
@@ -126,7 +125,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(userEntity);
     }
     @Override
-    public JwtResponse login(@RequestBody LoginRequest loginRequest) {
+    public JwtResponse login(@RequestBody final LoginRequest loginRequest) {
         var userEntity = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User not found."));
         var authentication = authenticateUser(loginRequest);
@@ -136,12 +135,12 @@ public class UserServiceImpl implements UserService {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        return new JwtResponse(jwt, userEntity.getId() ,userEntity.getUsername(), userEntity.getEmail(), roles);
+        return new JwtResponse(jwt, userEntity.getId(), userEntity.getUsername(), userEntity.getEmail(), roles);
     }
 
     @Override
     @Transactional
-    public UserResponse registerUser(SignupRequest signupRequest) {
+    public UserResponse registerUser(final SignupRequest signupRequest) {
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
          throw  new RuntimeException("Username already taken");
         }

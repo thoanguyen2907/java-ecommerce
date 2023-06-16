@@ -2,7 +2,6 @@ package com.example.javaecommerce.services.impl;
 
 import com.example.javaecommerce.exception.ResourceNotFoundException;
 import com.example.javaecommerce.mapper.OrderMapper;
-import com.example.javaecommerce.mapper.UserMapper;
 import com.example.javaecommerce.model.entity.*;
 import com.example.javaecommerce.model.request.CartItemRequest;
 import com.example.javaecommerce.model.request.OrderRequest;
@@ -31,7 +30,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
 
     private final OrderMapper orderMapper;
-    private final UserMapper userMapper;
 
     @Override
     public List<OrderResponse> getAllOrders() {
@@ -40,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse addOrder(OrderRequest orderRequest) {
+    public OrderResponse addOrder(final OrderRequest orderRequest) {
         OrderEntity order = new OrderEntity();
         //su dung jwt security de find out user
         var signedUser = JWTSecurity.getJWTUserInfo().orElseThrow();
@@ -76,14 +74,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse getOrderById(Long orderID) {
+    public OrderResponse getOrderById(final Long orderID) {
         OrderEntity orderEntity = orderRepository.findById(orderID)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderID));
         return orderMapper.toOrderResponse(orderEntity);
     }
 
     @Override
-    public void deleteOrder(Long orderID) throws Exception {
+    public void deleteOrder(final Long orderID) throws Exception {
         OrderDetailEntity orderDetailEntity = orderDetailRepository.findAll().stream().filter(
                         order -> Objects.equals(order.getId(), orderID))
                 .findFirst()
@@ -96,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse updateOrder(OrderRequest orderRequest, Long id) {
+    public OrderResponse updateOrder(final OrderRequest orderRequest, final Long id) {
         OrderEntity orderEntity = orderRepository.findById(id)
                 .map(orderDetail -> {
                     orderDetail.setEmail(orderRequest.getEmail());

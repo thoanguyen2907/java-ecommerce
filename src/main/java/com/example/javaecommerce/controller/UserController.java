@@ -30,17 +30,17 @@ public class UserController {
     }
 
     @PostMapping
-    public UserResponse addUser(@RequestBody UserRequest userRequest) {
+    public UserResponse addUser(@RequestBody final UserRequest userRequest) {
         return userService.addUser(userRequest);
     }
 
     @DeleteMapping(path = "{userId}")
-    public void deleteUser(@PathVariable("userId") Long userId) {
+    public void deleteUser(@PathVariable("userId") final Long userId) {
         userService.deleteUser(userId);
     }
 
     @PutMapping
-    public UserResponse updateUser(@RequestBody UserRequest userRequest, Long id) {
+    public UserResponse updateUser(@RequestBody final UserRequest userRequest, final Long id) {
         return userService.updateUser(userRequest, id);
     }
     @GetMapping("/me")

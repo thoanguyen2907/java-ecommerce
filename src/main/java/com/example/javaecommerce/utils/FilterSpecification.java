@@ -11,8 +11,8 @@ import javax.persistence.criteria.Predicate;
 
 @Service
 public class FilterSpecification<T> {
-    public Specification<T> getSearchSpecification(List<SearchRequestDTO> searchRequestDTOList,
-                                                   RequestDTO.GlobalOperator globalOperator) {
+    public Specification<T> getSearchSpecification(final List<SearchRequestDTO> searchRequestDTOList,
+                                                   final RequestDTO.GlobalOperator globalOperator) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             for (SearchRequestDTO requestDTO : searchRequestDTOList) {

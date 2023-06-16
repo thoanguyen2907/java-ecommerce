@@ -8,7 +8,7 @@ import lombok.Setter;
 public class SearchRequestDTO {
     private String column;
     private String value;
-    Operation operation;
+    private Operation operation;
     private String joinTable;
 
     public enum Operation {

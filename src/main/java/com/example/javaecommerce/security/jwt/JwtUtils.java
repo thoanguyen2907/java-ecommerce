@@ -4,11 +4,10 @@ import com.example.javaecommerce.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.Date;
 
 @Component
@@ -18,7 +17,7 @@ public class JwtUtils {
     public static final String ISSUER_GENERATE_REFRESH_TOKEN = "Therapex";
     public static final String SIGNING_KEY = "HelloWorld";
 
-    public String generateJwtToken(Authentication authentication) {
+    public String generateJwtToken(final Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
@@ -42,7 +41,7 @@ public class JwtUtils {
                 .getBody().getSubject();
     }
 
-    public boolean validateJwtToken(String authToken) {
+    public boolean validateJwtToken(final String authToken) {
         try {
             Jwts.parser().setSigningKey(SIGNING_KEY).parseClaimsJws(authToken);
             return true;

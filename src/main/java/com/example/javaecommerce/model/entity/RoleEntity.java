@@ -2,10 +2,8 @@ package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.base.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,7 +38,7 @@ public class RoleEntity extends BaseEntity {
         return users;
     }
 
-    public void setUsers(Set<UserEntity> users) {
+    public void setUsers(final Set<UserEntity> users) {
         this.users = users;
     }
 }

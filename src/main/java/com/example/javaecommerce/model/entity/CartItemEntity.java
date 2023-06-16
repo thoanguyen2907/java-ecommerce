@@ -1,7 +1,7 @@
 package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.base.BaseEntity;
-import com.example.javaecommerce.model.base.IdBase;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

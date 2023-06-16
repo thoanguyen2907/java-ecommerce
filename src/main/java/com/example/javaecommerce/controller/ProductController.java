@@ -1,22 +1,18 @@
 package com.example.javaecommerce.controller;
 
-import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.request.ProductRequest;
 import com.example.javaecommerce.model.request.RequestDTO;
 import com.example.javaecommerce.model.response.ProductResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
-import com.example.javaecommerce.repository.ProductRepository;
+
 import com.example.javaecommerce.services.ProductService;
-import com.example.javaecommerce.utils.FilterSpecification;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -24,10 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-
-    private final FilterSpecification<ProductEntity> filterSpecification;
-
-    private final ProductRepository productRepository;
 
     @GetMapping
     public ResponseEntity<?> getAllProducts(@RequestParam(name = "offset", defaultValue = "0") final Integer offset,
@@ -37,48 +29,48 @@ public class ProductController {
     }
 
     @GetMapping(path = "{productId}")
-    public ResponseEntity<?> getProductById(@PathVariable("productId") Long productId) {
+    public ResponseEntity<?> getProductById(@PathVariable("productId") final Long productId) {
         ProductResponse productResponse = productService.getProductById(productId);
         return ResponseEntity.ok(productResponse);
     }
 
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody ProductRequest productRequest) {
+    public ResponseEntity<?> addProduct(@RequestBody final ProductRequest productRequest) {
         ProductResponse productResponse = productService.addProduct(productRequest);
         return ResponseEntity.ok(productResponse);
     }
 
     @PostMapping(value = "/rating/{productId}/{rating}")
-    public int calculateAverageRating(@PathVariable("productId") Long productId, @PathVariable("rating") int rating) {
+    public int calculateAverageRating(@PathVariable("productId") final Long productId, @PathVariable("rating") final int rating) {
         int averageRating = productService.calculateRating(productId, rating);
         return averageRating;
     }
 
     @DeleteMapping(path = "{productId}")
-    public void deleteProduct(@PathVariable("productId") Long productId) {
+    public void deleteProduct(@PathVariable("productId") final Long productId) {
         productService.deleteProduct(productId);
     }
 
     @PutMapping(path = "{productId}")
-    public ResponseEntity<?> updateProduct(@RequestBody ProductRequest productRequest, @PathVariable Long id) {
+    public ResponseEntity<?> updateProduct(@RequestBody final ProductRequest productRequest, @PathVariable final Long id) {
         ProductResponse productResponse = productService.updateProduct(productRequest, id);
         return ResponseEntity.ok(productResponse);
     }
 
     @GetMapping("/category/{categoryId}/")
-    public ResponseEntity<?> getAllProductByCategoryId(@PathVariable(value = "categoryId") Long categoryId) {
+    public ResponseEntity<?> getAllProductByCategoryId(@PathVariable(value = "categoryId") final Long categoryId) {
         List<ProductResponse> productListByCategoryId = productService.getProductListByCategoryId(categoryId);
         return ResponseEntity.ok(productListByCategoryId);
     }
 
     @DeleteMapping("/category/{categoryId}")
-    public ResponseEntity<?> deleteAllProductOfCategory(@PathVariable(value = "categoryId") Long categoryId) {
+    public ResponseEntity<?> deleteAllProductOfCategory(@PathVariable(value = "categoryId") final Long categoryId) {
         productService.deleteProductsOfCategory(categoryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/search/specification")
-    public PaginationPage<ProductResponse> getAllProductsWithSearch(@RequestBody RequestDTO requestDTO,
+    public PaginationPage<ProductResponse> getAllProductsWithSearch(@RequestBody final RequestDTO requestDTO,
                                                                     @RequestParam(name = "offset", defaultValue = "0") final Integer offset,
                                                                     @RequestParam(name = "limit", defaultValue = "3") final Integer limit) {
         return productService.getAllProductsWithSearch(offset, limit, requestDTO);

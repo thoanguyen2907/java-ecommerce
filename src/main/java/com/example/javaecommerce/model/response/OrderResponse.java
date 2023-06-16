@@ -1,12 +1,9 @@
 package com.example.javaecommerce.model.response;
 
-import com.example.javaecommerce.model.entity.OrderDetailEntity;
-import com.example.javaecommerce.model.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter

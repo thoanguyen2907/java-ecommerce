@@ -25,23 +25,23 @@ public class CategoryController {
     }
 
     @GetMapping(path = "{categoryId}")
-    public CategoryResponse getCategoryById(@PathVariable("categoryId") Long categoryId) {
+    public CategoryResponse getCategoryById(@PathVariable("categoryId") final Long categoryId) {
         return categoryService.getCategoryById(categoryId);
     }
 
     @PostMapping
-    public ResponseEntity<?> addCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<?> addCategory(@Valid @RequestBody final CategoryRequest categoryRequest) {
         CategoryResponse categoryResponse = categoryService.addCategory(categoryRequest);
         return ResponseEntity.ok(categoryResponse);
     }
 
     @DeleteMapping(path = "{categoryId}")
-    public void deleteCategory(@PathVariable("categoryId") Long categoryId) throws Exception {
+    public void deleteCategory(@PathVariable("categoryId") final Long categoryId) throws Exception {
         categoryService.deleteCategory(categoryId);
     }
 
     @PutMapping
-    public ResponseEntity<?> updateCategory(@RequestBody CategoryRequest categoryRequest, @PathVariable Long id) {
+    public ResponseEntity<?> updateCategory(@RequestBody final CategoryRequest categoryRequest, @PathVariable final Long id) {
         CategoryResponse categoryResponse = categoryService.updateCategory(categoryRequest, id);
         return ResponseEntity.ok(categoryResponse);
     }
