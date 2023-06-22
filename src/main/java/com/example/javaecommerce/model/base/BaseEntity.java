@@ -19,7 +19,7 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public abstract class BaseEntity extends IdBase {
+public abstract class BaseEntity {
 
     @Column(name = "created_date")
     @CreatedDate

@@ -16,6 +16,10 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 public class OrderEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "id", updatable = false, nullable = false)
+    private Long id;
     private String address;
     private String city;
     private String country;

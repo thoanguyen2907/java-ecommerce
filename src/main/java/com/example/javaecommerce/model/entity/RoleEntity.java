@@ -19,6 +19,10 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 public class RoleEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "id", updatable = false, nullable = false)
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)

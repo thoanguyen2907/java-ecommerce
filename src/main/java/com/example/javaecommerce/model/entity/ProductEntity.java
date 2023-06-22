@@ -16,6 +16,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "products")
 public class ProductEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "id", updatable = false, nullable = false)
+    private Long id;
     @NotBlank(message = "name must not be empty")
     private String name;
     private String image;
