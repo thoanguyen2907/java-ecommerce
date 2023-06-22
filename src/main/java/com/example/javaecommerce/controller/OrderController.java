@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/v1/orders")
+@RequestMapping(path = "/api/v1/orders")
 @RequiredArgsConstructor
 public class OrderController {
-    @Autowired
+
     private final OrderService orderService;
 
     @GetMapping

@@ -14,6 +14,11 @@ import javax.persistence.*;
 @Entity
 @Table(name = "order_details")
 public class OrderDetailEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "id", updatable = false, nullable = false)
+    private Long id;
+
     private float total;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
