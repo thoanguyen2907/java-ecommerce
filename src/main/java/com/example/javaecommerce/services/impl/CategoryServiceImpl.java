@@ -73,7 +73,7 @@ public class CategoryServiceImpl implements CategoryService {
         if (null != productEntity) {
             throw new Exception("product is existed");
         } else {
-                categoryRepository.deleteById(categoryId);
+            categoryRepository.deleteById(categoryId);
         }
     }
 

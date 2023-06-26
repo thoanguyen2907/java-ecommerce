@@ -1,18 +1,22 @@
 package com.example.javaecommerce.category;
 
 import com.example.javaecommerce.IntegrationTestUtil;
+import com.example.javaecommerce.exception.ResourceNotFoundException;
 import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.request.CategoryRequest;
 
+import com.example.javaecommerce.model.response.CategoryResponse;
 import com.example.javaecommerce.repository.CategoryRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,11 +35,14 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Random;
 
+import static com.example.javaecommerce.ResponseBodyMatcher.responseBody;
 import static com.example.javaecommerce.category.CategoryTestApi.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -49,6 +56,8 @@ public class CategoryApiDelegateImplTest {
     private CategoryRepository categoryRepository;
     @MockBean
     private ProductRepository productRepository;
+    @Autowired
+    private ObjectMapper objectMapper;
     private Long categoryId;
     private CategoryRequest categoryRequest;
     private CategoryEntity category;
@@ -115,6 +124,27 @@ public class CategoryApiDelegateImplTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/category/{categoryId}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("product is existed"));
+                .andExpect(content().string("product is existed"));
+    }
+
+    @Test
+    public void givenValidCategoryId_whenGetCategoryById_thenReturnCategory() throws Exception {
+        Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.ofNullable(category));
+        var expectedCategory = toCategoryResponse(category);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category/{categoryId}", categoryId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().containsObjectBody(expectedCategory, CategoryResponse.class, objectMapper));
+    }
+
+    @Test
+    public void givenValidCategoryId_whenGetCategoryById_thenThrowException() throws Exception {
+        Long categoryIdRandom = 100L;
+
+        Mockito.when(categoryRepository.findById(categoryIdRandom)).thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category/{categoryId}", categoryIdRandom)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
