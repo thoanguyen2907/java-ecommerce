@@ -86,4 +86,5 @@ public class CategoryServiceImpl implements CategoryService {
                 }).orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
         return categoryMapper.toCategoryResponse(categoryEntity);
     }
+
 }

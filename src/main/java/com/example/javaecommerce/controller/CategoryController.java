@@ -46,9 +46,9 @@ public class CategoryController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateCategory(@RequestBody final CategoryRequest categoryRequest, @PathVariable final Long id) {
-        CategoryResponse categoryResponse = categoryService.updateCategory(categoryRequest, id);
+    @PutMapping(path = "{categoryId}")
+    public ResponseEntity<?> updateCategory(@RequestBody final CategoryRequest categoryRequest, @PathVariable final Long categoryId) {
+        CategoryResponse categoryResponse = categoryService.updateCategory(categoryRequest, categoryId);
         return ResponseEntity.ok(categoryResponse);
     }
 }

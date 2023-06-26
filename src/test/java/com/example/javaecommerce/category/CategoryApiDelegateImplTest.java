@@ -2,6 +2,7 @@ package com.example.javaecommerce.category;
 
 import com.example.javaecommerce.IntegrationTestUtil;
 import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.mapper.CategoryMapper;
 import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.request.CategoryRequest;
@@ -37,10 +38,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.example.javaecommerce.ResponseBodyMatcher.responseBody;
 import static com.example.javaecommerce.category.CategoryTestApi.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -58,9 +61,12 @@ public class CategoryApiDelegateImplTest {
     private ProductRepository productRepository;
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private CategoryMapper categoryMapper;
     private Long categoryId;
     private CategoryRequest categoryRequest;
     private CategoryEntity category;
+
 
     @Before
     public void setUp() {
@@ -147,4 +153,48 @@ public class CategoryApiDelegateImplTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    public void givenExistingCategory_whenUpdatingCategory_thenReturnsUpdatedCategory() throws Exception {
+        //find category - mock when
+        Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.ofNullable(category));
+        //prepare request category to update
+        var categoryUpdateRequest = prepareCategoryForRequestingUpdate("Category B");
+        //save updated category
+        var categoryEntityUpdate = categoryMapper.toCategoryEntity(categoryUpdateRequest);
+        Mockito.when(categoryRepository.save(Mockito.any(CategoryEntity.class))).thenReturn(categoryEntityUpdate);
+        //prepare expected response
+        var expectedCategory = categoryMapper.toCategoryResponse(categoryEntityUpdate);
+        //perform the API request and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/category/{categoryId}", categoryId)
+                        .content(IntegrationTestUtil.asJsonString(categoryUpdateRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(responseBody().containsObjectBody(expectedCategory, CategoryResponse.class, objectMapper));
+    }
+
+    @Test
+    public void givenNotExistingCategoryId_whenUpdatingCategory_thenReturnsBadRequestExceptions() throws Exception {
+        Long categoryIdRandom = 100L;
+        // find category throw error
+        Mockito.when(categoryRepository.findById(categoryIdRandom))
+                .thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
+        // perform the API request and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/category/{categoryId}", categoryIdRandom))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenInvalidRequest_whenUpdateCategory_thenReturnsNotFound() throws Exception {
+        Long categoryId = 1L;
+        // Send an invalid request with an empty category name
+        CategoryRequest invalidRequest = new CategoryRequest();
+        invalidRequest.setName("");
+        // perform the API request and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/category/{categoryId}", categoryId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isNotFound());
+    }
+
 }
