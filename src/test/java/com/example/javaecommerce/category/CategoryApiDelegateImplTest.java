@@ -8,13 +8,13 @@ import com.example.javaecommerce.model.entity.ProductEntity;
 import com.example.javaecommerce.model.request.CategoryRequest;
 
 import com.example.javaecommerce.model.response.CategoryResponse;
+import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.repository.CategoryRepository;
 import com.example.javaecommerce.repository.ProductRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 
 import org.mockito.Mockito;
@@ -22,25 +22,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import static com.example.javaecommerce.ResponseBodyMatcher.responseBody;
 import static com.example.javaecommerce.category.CategoryTestApi.*;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import static org.hamcrest.Matchers.is;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -81,15 +80,10 @@ public class CategoryApiDelegateImplTest {
 
     @Test
     public void givenMissingNameAttribute_whenAddCategory_thenReturnBadRequest() throws Exception {
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1/category")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content("{\"description\":\"Category without name attribute\"}");
-        //act
-        MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
-        //assert
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), mvcResult.getResponse().getStatus(),
-                "Incorrect HTTP status code returned");
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"description\":\"Category without name attribute\"}"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -99,13 +93,11 @@ public class CategoryApiDelegateImplTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/category/{categoryId}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
-
     }
 
     @Test
     public void givenInvalidCategoryId_whenDeleteCategory_thenReturnsProductExistedError() throws Exception {
         categoryId = 100L;
-
         CategoryEntity category = CategoryEntity.builder()
                 .id(categoryId)
                 .name("Category A")
@@ -137,10 +129,11 @@ public class CategoryApiDelegateImplTest {
     }
 
     @Test
-    public void givenValidCategoryId_whenGetCategoryById_thenThrowException() throws Exception {
+    public void givenInvalidCategoryId_whenGetCategoryById_thenThrowException() throws Exception {
         Long categoryIdRandom = 100L;
 
-        Mockito.when(categoryRepository.findById(categoryIdRandom)).thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
+        Mockito.when(categoryRepository.findById(categoryIdRandom))
+                .thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category/{categoryId}", categoryIdRandom)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -189,5 +182,38 @@ public class CategoryApiDelegateImplTest {
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isNotFound());
     }
+    @Test
+    public void givenOffsetAndLimit_whenGetAllCategoriesPagination_thenReturnsCategories() throws Exception {
+        int offset = 0;
+        int limit = 10;
 
+        // Create a list of category entities
+        List<CategoryEntity> categoryEntities = Arrays.asList(
+                new CategoryEntity(1L, "Category 1"),
+                new CategoryEntity(2L, "Category 2"),
+                new CategoryEntity(3L, "Category 3")
+        );
+
+        // Mock the repository response
+        Pageable pageable = new OffsetPageRequest(offset, limit);
+        Page<CategoryEntity> page = new PageImpl<>(categoryEntities, pageable, categoryEntities.size());
+        Mockito.when(categoryRepository.findAll(pageable)).thenReturn(page);
+
+        // Perform the API request and validate the response
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category")
+                        .param("offset", String.valueOf(offset))
+                        .param("limit", String.valueOf(limit))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalRecords", is(categoryEntities.size())))
+                .andExpect(jsonPath("$.offset", is(offset)))
+                .andExpect(jsonPath("$.limit", is(limit)))
+                .andExpect(jsonPath("$.records", hasSize(categoryEntities.size())))
+                .andExpect(jsonPath("$.records[0].id", is(categoryEntities.get(0).getId().intValue())))
+                .andExpect(jsonPath("$.records[0].name", is(categoryEntities.get(0).getName())))
+                .andExpect(jsonPath("$.records[1].id", is(categoryEntities.get(1).getId().intValue())))
+                .andExpect(jsonPath("$.records[1].name", is(categoryEntities.get(1).getName())));
+
+    }
 }
+

@@ -19,7 +19,7 @@ public class CategoryController {
 
 
     @GetMapping
-    public PaginationPage<CategoryResponse> getAllCategoriesPagination(@RequestParam(name = "offset", defaultValue = "1") final Integer offset,
+    public PaginationPage<CategoryResponse> getAllCategoriesPagination(@RequestParam(name = "offset", defaultValue = "0") final Integer offset,
                                                                        @RequestParam(name = "limit", defaultValue = "10") final Integer limit) {
         var categoryList = categoryService.getAllCategoriesPagination(offset, limit);
         return categoryList;
