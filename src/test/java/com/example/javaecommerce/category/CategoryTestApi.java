@@ -25,6 +25,7 @@ public final class CategoryTestApi {
                 .name(categoryEntity.getName())
                 .build();
     }
+
     public static CategoryRequest prepareCategoryForRequestingUpdate(final String name) {
         return CategoryRequest.builder()
                 .name(name)

@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,18 +31,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
 
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 import static com.example.javaecommerce.ResponseBodyMatcher.responseBody;
 import static com.example.javaecommerce.category.CategoryTestApi.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
@@ -54,7 +49,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CategoryApiDelegateImplTest {
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private CategoryRepository categoryRepository;
     @MockBean
@@ -66,7 +60,6 @@ public class CategoryApiDelegateImplTest {
     private Long categoryId;
     private CategoryRequest categoryRequest;
     private CategoryEntity category;
-
 
     @Before
     public void setUp() {
