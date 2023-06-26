@@ -6,8 +6,9 @@ import com.example.javaecommerce.model.response.CategoryResponse;
 
 
 public final class CategoryTestApi {
-    public static CategoryEntity makeCategoryForSaving() {
+    public static CategoryEntity makeCategoryForSaving(final Long categoryId) {
         return CategoryEntity.builder()
+                .id(categoryId)
                 .name("Category A")
                 .build();
     }
@@ -20,6 +21,7 @@ public final class CategoryTestApi {
 
     public static CategoryResponse toCategoryResponse(final CategoryEntity categoryEntity) {
         return CategoryResponse.builder()
+                .id(categoryEntity.getId())
                 .name(categoryEntity.getName())
                 .build();
     }

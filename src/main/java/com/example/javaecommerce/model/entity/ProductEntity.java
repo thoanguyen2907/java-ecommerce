@@ -1,9 +1,7 @@
 package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.base.BaseEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -13,7 +11,9 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "products")
 public class ProductEntity extends BaseEntity {
     @Id

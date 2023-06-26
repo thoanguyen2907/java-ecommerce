@@ -5,6 +5,7 @@ import com.example.javaecommerce.model.response.CategoryResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.services.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,8 +37,13 @@ public class CategoryController {
     }
 
     @DeleteMapping(path = "{categoryId}")
-    public void deleteCategory(@PathVariable("categoryId") final Long categoryId) throws Exception {
-        categoryService.deleteCategory(categoryId);
+    public ResponseEntity<?> deleteCategory(@PathVariable("categoryId") final Long categoryId) throws Exception {
+        try {
+            categoryService.deleteCategory(categoryId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("product is existed");
+        }
     }
 
     @PutMapping

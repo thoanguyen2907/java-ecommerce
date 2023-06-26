@@ -15,9 +15,10 @@ import javax.validation.constraints.NotBlank;
 @Table(name = "category")
 public class CategoryEntity extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     @Column(columnDefinition = "id", updatable = false, nullable = false)
     private Long id;
+
     @NotBlank(message = "category name  must not be empty")
     private String name;
 }
