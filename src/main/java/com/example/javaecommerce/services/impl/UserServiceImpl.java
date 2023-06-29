@@ -48,9 +48,10 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+
     @Override
     public List<UserResponse> getAllUsers() {
-        List<UserEntity> userEntities =  userRepository.findAll();
+        List<UserEntity> userEntities = userRepository.findAll();
         return userMapper.toListUserResponse(userEntities);
     }
 
@@ -61,26 +62,11 @@ public class UserServiceImpl implements UserService {
         }
         UserEntity user = new UserEntity();
         user.setEmail(userRequest.getEmail());
-        Set<String> strRoles = userRequest.getRoles();
+
         Set<RoleEntity> roles = new HashSet<>();
-        strRoles.forEach(role -> {
-            switch (role) {
-                case "admin":
-                    RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                            .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_ADMIN));
-                    roles.add(adminRole);
-                    break;
-                case "moderator":
-                    RoleEntity therapistRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                            .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_MODERATOR));
-                    roles.add(therapistRole);
-                    break;
-                default:
-                    RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                            .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_USER));
-                    roles.add(userRole);
-            }
-        });
+        RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_USER));
+        roles.add(userRole);
 
         UserEntity result = userRepository.save(user);
         return userMapper.toUserResponse(result);
@@ -124,6 +110,7 @@ public class UserServiceImpl implements UserService {
         var userEntity = userRepository.findById(signedInUser.getId()).orElseThrow(() -> new RuntimeException("cant find user!"));
         return userMapper.toUserResponse(userEntity);
     }
+
     @Override
     public JwtResponse login(@RequestBody final LoginRequest loginRequest) {
         var userEntity = userRepository.findByEmail(loginRequest.getEmail())
@@ -142,40 +129,18 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse registerUser(final SignupRequest signupRequest) {
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
-         throw  new RuntimeException("Username already taken");
+            throw new RuntimeException("Username already taken");
         }
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            throw  new RuntimeException("Email already taken");
+            throw new RuntimeException("Email already taken");
         }
         UserEntity user = new UserEntity(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()));
-        Set<String> strRoles = signupRequest.getRoles();
         Set<RoleEntity> roles = new HashSet<>();
-        if (strRoles == null) {
-            RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error : Role is not found "));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
-                        roles.add(adminRole);
-                        break;
-                    case "mod":
-                        RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
-                        roles.add(modRole);
-                        break;
-                    default:
-                        RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
-                        roles.add(userRole);
-                }
-            });
-        }
+        RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error : Role is not found "));
+        roles.add(userRole);
         user.setRoles(roles);
         UserEntity result = userRepository.save(user);
         return userMapper.toUserResponse(result);

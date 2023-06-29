@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
+    @PreAuthorize("hasRole('USER')  or hasRole('ADMIN')")
     public ResponseEntity<?> getAllProducts(@RequestParam(name = "offset", defaultValue = "0") final Integer offset,
                                             @RequestParam(name = "limit", defaultValue = "3") final Integer limit) {
         PaginationPage<ProductResponse> productResponses = productService.getAllProducts(offset, limit);
@@ -35,6 +37,7 @@ public class ProductController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addProduct(@RequestBody final ProductRequest productRequest) {
         ProductResponse productResponse = productService.addProduct(productRequest);
         return ResponseEntity.ok(productResponse);

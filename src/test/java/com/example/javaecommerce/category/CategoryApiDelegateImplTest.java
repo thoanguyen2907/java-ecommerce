@@ -4,20 +4,27 @@ import com.example.javaecommerce.IntegrationTestUtil;
 import com.example.javaecommerce.exception.ResourceNotFoundException;
 import com.example.javaecommerce.mapper.CategoryMapper;
 import com.example.javaecommerce.model.entity.CategoryEntity;
+
 import com.example.javaecommerce.model.entity.ProductEntity;
+
 import com.example.javaecommerce.model.request.CategoryRequest;
 
 import com.example.javaecommerce.model.response.CategoryResponse;
+
 import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.repository.CategoryRepository;
-import com.example.javaecommerce.repository.ProductRepository;
 
+import com.example.javaecommerce.repository.ProductRepository;
+;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.Before;
 import org.junit.Test;
+
 import org.junit.runner.RunWith;
 
 import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,6 +45,8 @@ import static com.example.javaecommerce.ResponseBodyMatcher.responseBody;
 import static com.example.javaecommerce.category.CategoryTestApi.*;
 
 import static org.hamcrest.Matchers.hasSize;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.is;
 
@@ -69,7 +78,7 @@ public class CategoryApiDelegateImplTest {
 
     @Test
     public void givenMoreComplexCategoryData_whenSendData_thenReturnsCategoryCreated() throws Exception {
-        Mockito.when(categoryRepository.save(Mockito.any())).thenReturn(category);
+        when(categoryRepository.save(Mockito.any())).thenReturn(category);
         var expectedCategory = toCategoryResponse(category);
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
                         .content(IntegrationTestUtil.asJsonString(categoryRequest))
@@ -88,7 +97,7 @@ public class CategoryApiDelegateImplTest {
 
     @Test
     public void givenValidCategoryId_whenDeleteCategory_thenReturnNoContent() throws Exception {
-        Mockito.when(productRepository.findAll()).thenReturn(Collections.emptyList());
+        when(productRepository.findAll()).thenReturn(Collections.emptyList());
         Mockito.doNothing().when(categoryRepository).deleteById(categoryId);
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/category/{categoryId}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -109,7 +118,7 @@ public class CategoryApiDelegateImplTest {
                 .category(category)
                 .build();
 
-        Mockito.when(productRepository.findAll()).thenReturn(Collections.singletonList(product));
+        when(productRepository.findAll()).thenReturn(Collections.singletonList(product));
         Mockito.doNothing().when(categoryRepository).deleteById(categoryId);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/category/{categoryId}", categoryId)
@@ -120,7 +129,7 @@ public class CategoryApiDelegateImplTest {
 
     @Test
     public void givenValidCategoryId_whenGetCategoryById_thenReturnCategory() throws Exception {
-        Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.ofNullable(category));
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.ofNullable(category));
         var expectedCategory = toCategoryResponse(category);
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category/{categoryId}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -132,7 +141,7 @@ public class CategoryApiDelegateImplTest {
     public void givenInvalidCategoryId_whenGetCategoryById_thenThrowException() throws Exception {
         Long categoryIdRandom = 100L;
 
-        Mockito.when(categoryRepository.findById(categoryIdRandom))
+        when(categoryRepository.findById(categoryIdRandom))
                 .thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category/{categoryId}", categoryIdRandom)
@@ -143,12 +152,12 @@ public class CategoryApiDelegateImplTest {
     @Test
     public void givenExistingCategory_whenUpdatingCategory_thenReturnsUpdatedCategory() throws Exception {
         //find category - mock when
-        Mockito.when(categoryRepository.findById(categoryId)).thenReturn(Optional.ofNullable(category));
+        when(categoryRepository.findById(categoryId)).thenReturn(Optional.ofNullable(category));
         //prepare request category to update
         var categoryUpdateRequest = prepareCategoryForRequestingUpdate("Category B");
         //save updated category
         var categoryEntityUpdate = categoryMapper.toCategoryEntity(categoryUpdateRequest);
-        Mockito.when(categoryRepository.save(Mockito.any(CategoryEntity.class))).thenReturn(categoryEntityUpdate);
+        when(categoryRepository.save(Mockito.any(CategoryEntity.class))).thenReturn(categoryEntityUpdate);
         //prepare expected response
         var expectedCategory = categoryMapper.toCategoryResponse(categoryEntityUpdate);
         //perform the API request and validate the response
@@ -163,7 +172,7 @@ public class CategoryApiDelegateImplTest {
     public void givenNotExistingCategoryId_whenUpdatingCategory_thenReturnsBadRequestExceptions() throws Exception {
         Long categoryIdRandom = 100L;
         // find category throw error
-        Mockito.when(categoryRepository.findById(categoryIdRandom))
+        when(categoryRepository.findById(categoryIdRandom))
                 .thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
         // perform the API request and validate the response
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/category/{categoryId}", categoryIdRandom))
@@ -182,6 +191,7 @@ public class CategoryApiDelegateImplTest {
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     public void givenOffsetAndLimit_whenGetAllCategoriesPagination_thenReturnsCategories() throws Exception {
         int offset = 0;
@@ -197,7 +207,7 @@ public class CategoryApiDelegateImplTest {
         // Mock the repository response
         Pageable pageable = new OffsetPageRequest(offset, limit);
         Page<CategoryEntity> page = new PageImpl<>(categoryEntities, pageable, categoryEntities.size());
-        Mockito.when(categoryRepository.findAll(pageable)).thenReturn(page);
+        when(categoryRepository.findAll(pageable)).thenReturn(page);
 
         // Perform the API request and validate the response
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category")
@@ -215,5 +225,6 @@ public class CategoryApiDelegateImplTest {
                 .andExpect(jsonPath("$.records[1].name", is(categoryEntities.get(1).getName())));
 
     }
+
 }
 
