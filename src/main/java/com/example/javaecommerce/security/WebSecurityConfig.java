@@ -57,7 +57,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -69,7 +69,10 @@ public class WebSecurityConfig {
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/api/v1/products/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/users/**").authenticated()
-                .antMatchers(HttpMethod.GET, "/api/v1/products/**").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/v1/category/**").permitAll()
+                .antMatchers(HttpMethod.DELETE, "/api/v1/category/**").permitAll()
+                .antMatchers(HttpMethod.PUT, "/api/v1/category/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/orders/**").authenticated()
                 .anyRequest().authenticated();
 

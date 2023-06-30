@@ -1,7 +1,9 @@
 package com.example.javaecommerce.services.impl;
 
 import com.example.javaecommerce.converter.Converter;
-import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.exception.EcommerceRunTimeException;
+import com.example.javaecommerce.exception.ErrorCode;
+
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.*;
 import com.example.javaecommerce.model.request.RoleRequest;
@@ -41,7 +43,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleResponse getRoleById(final Long roleId) {
         RoleEntity roleEntity = roleRepository.findById(roleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleId)
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND)
                 );
         return Converter.toModel(roleEntity, RoleResponse.class);
     }
@@ -60,10 +62,11 @@ public class RoleServiceImpl implements RoleService {
     public RoleResponse addRoleForUser(final Long userId, final RoleRequest roleRequest) {
         RoleEntity _role = userRepository.findById(userId).map(user -> {
             String roleName = roleRequest.getName();
-            RoleEntity role = roleRepository.findByName(ERole.valueOf(roleName)).orElseThrow(() -> new RuntimeException("cant find role"));
+            RoleEntity role = roleRepository.findByName(ERole.valueOf(roleName))
+                    .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
             userRepository.save(user);
             return role;
-        }).orElseThrow(() -> new RuntimeException("cant find user"));
+        }).orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         return Converter.toModel(_role, RoleResponse.class);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.javaecommerce.services.impl;
 
-import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.exception.EcommerceRunTimeException;
+import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.mapper.UserMapper;
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.RoleEntity;
@@ -45,7 +46,6 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
-
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
@@ -58,14 +58,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse addUser(final UserRequest userRequest) {
         if (userRepository.existsByEmail(userRequest.getEmail())) {
-            throw new IllegalStateException("Email is already existed !!");
+            throw new EcommerceRunTimeException(ErrorCode.ALREADY_EXIST);
         }
         UserEntity user = new UserEntity();
         user.setEmail(userRequest.getEmail());
 
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", ERole.ROLE_USER));
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         roles.add(userRole);
 
         UserEntity result = userRepository.save(user);
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
                     user.setEmail(userRequest.getEmail());
                     user.setPassword(userRequest.getPassword());
                     return userRepository.save(user);
-                }).orElseThrow(() -> new ResourceNotFoundException("user", "id", id));
+                }).orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         return userMapper.toUserResponse(userEntity);
     }
 
@@ -107,14 +107,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse aboutMe() {
         var signedInUser = JWTSecurity.getJWTUserInfo().orElseThrow();
-        var userEntity = userRepository.findById(signedInUser.getId()).orElseThrow(() -> new RuntimeException("cant find user!"));
+        var userEntity = userRepository.findById(signedInUser.getId())
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         return userMapper.toUserResponse(userEntity);
     }
 
     @Override
     public JwtResponse login(@RequestBody final LoginRequest loginRequest) {
         var userEntity = userRepository.findByEmail(loginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Fail! -> Cause: User not found."));
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         var authentication = authenticateUser(loginRequest);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
@@ -129,17 +130,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse registerUser(final SignupRequest signupRequest) {
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
-            throw new RuntimeException("Username already taken");
+            throw new EcommerceRunTimeException(ErrorCode.ALREADY_EXIST);
         }
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new RuntimeException("Email already taken");
+            throw new EcommerceRunTimeException(ErrorCode.ALREADY_EXIST);
         }
         UserEntity user = new UserEntity(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()));
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
-                .orElseThrow(() -> new RuntimeException("Error : Role is not found "));
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         roles.add(userRole);
         user.setRoles(roles);
         UserEntity result = userRepository.save(user);
@@ -155,7 +156,7 @@ public class UserServiceImpl implements UserService {
                     )
             );
         } catch (BadCredentialsException e) {
-            throw new RuntimeException("Unauthorization ! ");
+            throw new EcommerceRunTimeException(ErrorCode.UNAUTHENTICATED);
         }
     }
 

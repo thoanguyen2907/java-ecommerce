@@ -1,6 +1,7 @@
 package com.example.javaecommerce.services.impl;
 
-import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.exception.EcommerceRunTimeException;
+import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.mapper.OrderMapper;
 import com.example.javaecommerce.model.entity.*;
 import com.example.javaecommerce.model.request.CartItemRequest;
@@ -76,7 +77,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponse getOrderById(final Long orderID) {
         OrderEntity orderEntity = orderRepository.findById(orderID)
-                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderID));
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         return orderMapper.toOrderResponse(orderEntity);
     }
 
@@ -87,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
                 .findFirst()
                 .orElse(null);
         if (null != orderDetailEntity) {
-            throw new Exception("order detail is existed");
+            throw new EcommerceRunTimeException(ErrorCode.ITEM_EXISTED);
         } else {
             orderRepository.deleteById(orderID);
         }
@@ -106,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
                     orderDetail.setFirstName(orderRequest.getFirstName());
                     orderDetail.setPostalCode(orderRequest.getPostalCode());
                     return orderRepository.save(orderDetail);
-                }).orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+                }).orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         return orderMapper.toOrderResponse(orderEntity);
     }
 }

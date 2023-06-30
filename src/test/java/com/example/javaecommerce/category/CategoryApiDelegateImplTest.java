@@ -1,7 +1,9 @@
 package com.example.javaecommerce.category;
 
 import com.example.javaecommerce.IntegrationTestUtil;
-import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.exception.EcommerceRunTimeException;
+import com.example.javaecommerce.exception.ErrorCode;
+
 import com.example.javaecommerce.mapper.CategoryMapper;
 import com.example.javaecommerce.model.entity.CategoryEntity;
 
@@ -142,7 +144,7 @@ public class CategoryApiDelegateImplTest {
         Long categoryIdRandom = 100L;
 
         when(categoryRepository.findById(categoryIdRandom))
-                .thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
+                .thenThrow(new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/category/{categoryId}", categoryIdRandom)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -173,7 +175,7 @@ public class CategoryApiDelegateImplTest {
         Long categoryIdRandom = 100L;
         // find category throw error
         when(categoryRepository.findById(categoryIdRandom))
-                .thenThrow(new ResourceNotFoundException("Category", "id", categoryIdRandom));
+                .thenThrow(new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         // perform the API request and validate the response
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/category/{categoryId}", categoryIdRandom))
                 .andExpect(status().isBadRequest());
@@ -189,7 +191,7 @@ public class CategoryApiDelegateImplTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/api/v1/category/{categoryId}", categoryId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
