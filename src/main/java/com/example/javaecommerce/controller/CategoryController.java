@@ -37,10 +37,6 @@ public class CategoryController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addCategory(@Valid @RequestBody final CategoryRequest categoryRequest) {
-        boolean isAdmin = CheckAuthorized.isAuthorized("ADMIN");
-        if (!isAdmin) {
-            throw new EcommerceRunTimeException(ErrorCode.UNAUTHORIZED);
-        }
         CategoryResponse categoryResponse = categoryService.addCategory(categoryRequest);
         return ResponseEntity.ok(categoryResponse);
     }

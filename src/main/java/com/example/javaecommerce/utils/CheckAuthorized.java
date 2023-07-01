@@ -14,7 +14,7 @@ public final class CheckAuthorized {
         if (authentication != null && authentication.isAuthenticated()) {
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             for (GrantedAuthority authority : authorities) {
-                if (authority.equals(requiredRole)) {
+                if (authority.getAuthority().equals(requiredRole)) {
                     return true;
                 }
             }

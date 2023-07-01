@@ -108,8 +108,8 @@ public class CategoryApiDelegateImplTest {
     }
 
     @Test
-    @WithMockUser(username = "thoapermission1@gmail.com", roles = "USER")
-    public void givenMoreComplexCategoryData_whenSendDataAfterAuthenticated_thenReturnsCategoryCreated() throws Exception {
+    @WithMockUser(username = "naraalice@gmail.com", roles = "ADMIN")
+    public void givenMoreComplexCategoryData_whenSendDataAfterAuthenticatedRoleUser_thenReturnsCategoryCreated() throws Exception {
         // Mock the category repository save operation
         Mockito.when(categoryRepository.save(Mockito.any())).thenAnswer(invocation -> {
             CategoryEntity savedCategory = invocation.getArgument(0);
@@ -118,9 +118,18 @@ public class CategoryApiDelegateImplTest {
         });
 
         var expectedCategory = toCategoryResponse(category);
+        Set<RoleEntity> roles = new HashSet<>();
+        roles.add(RoleEntity.builder().name(ERole.ROLE_ADMIN).build());
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername("thoapermission1@gmail.com");
-
+        Collection<GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+      //  UserDetails userDetails = userDetailsService.loadUserByUsername("thoaadmin2@gmail.com");
+        UserDetails userDetails = UserDetailsImpl.builder()
+                .email("naraalice@gmail.com")
+                .password("123123")
+                .authorities(authorities)  // Set the role as "ADMIN"
+                .build();
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
 
@@ -136,7 +145,7 @@ public class CategoryApiDelegateImplTest {
     }
 
     @Test
-    @WithMockUser(username = "naratest@gmail.com", roles = "ADMIN")
+    @WithMockUser(username = "thoanara@gmail.com", roles = "ADMIN")
     public void givenMoreComplexCategoryData_whenSendDataAfterAuthenticatedRoleAdmin_thenReturnsCategoryCreated() throws Exception {
         // Mock the category repository save operation
         Mockito.when(categoryRepository.save(Mockito.any())).thenAnswer(invocation -> {
@@ -155,14 +164,14 @@ public class CategoryApiDelegateImplTest {
                 .collect(Collectors.toList());
 
         UserDetails userDetails = UserDetailsImpl.builder()
-                .email("naratest@gmail.com")
-                .password("test")
+                .email("thoanara@gmail.com")
+                .password("123123")
                 .authorities(authorities)  // Set the role as "ADMIN"
                 .build();
 
-
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
@@ -348,4 +357,3 @@ public class CategoryApiDelegateImplTest {
     }
 
 }
-
