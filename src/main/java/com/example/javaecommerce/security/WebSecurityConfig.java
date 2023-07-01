@@ -20,6 +20,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -68,17 +71,30 @@ public class WebSecurityConfig {
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/api/v1/products/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/users/**").authenticated()
-                .antMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/v1/category/**").permitAll()
-                .antMatchers(HttpMethod.DELETE, "/api/v1/category/**").permitAll()
-                .antMatchers(HttpMethod.PUT, "/api/v1/category/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/category/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/api/v1/orders/**").authenticated()
+                .antMatchers("/api/auth/verifyRegistration/**").permitAll()
+                .requestMatchers(publicEndpoints()).permitAll()
+                .requestMatchers(privateEndpoints()).authenticated()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    private RequestMatcher publicEndpoints() {
+        return new OrRequestMatcher(
+                new AntPathRequestMatcher("/api/v1/products/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/v1/category/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/v1/category/**", HttpMethod.DELETE.name()),
+                new AntPathRequestMatcher("/api/v1/category/**", HttpMethod.PUT.name())
+        );
+    }
+
+    private RequestMatcher privateEndpoints() {
+        return new OrRequestMatcher(
+                new AntPathRequestMatcher("/api/v1/users/**", HttpMethod.GET.name()),
+                new AntPathRequestMatcher("/api/v1/category/**", HttpMethod.POST.name()),
+                new AntPathRequestMatcher("/api/v1/orders/**", HttpMethod.POST.name())
+        );
     }
 
 }

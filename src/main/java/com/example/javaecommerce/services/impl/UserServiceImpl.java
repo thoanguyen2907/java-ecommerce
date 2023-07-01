@@ -1,11 +1,13 @@
 package com.example.javaecommerce.services.impl;
 
+import com.example.javaecommerce.event.RegistrationCompleteEvent;
 import com.example.javaecommerce.exception.EcommerceRunTimeException;
 import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.mapper.UserMapper;
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.RoleEntity;
 import com.example.javaecommerce.model.entity.UserEntity;
+import com.example.javaecommerce.model.entity.VerificationToken;
 import com.example.javaecommerce.model.request.LoginRequest;
 import com.example.javaecommerce.model.request.SignupRequest;
 import com.example.javaecommerce.model.request.UserRequest;
@@ -16,15 +18,18 @@ import com.example.javaecommerce.pagination.OffsetPageRequest;
 import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.repository.RoleRepository;
 import com.example.javaecommerce.repository.UserRepository;
+import com.example.javaecommerce.repository.VerificationTokenRepository;
 import com.example.javaecommerce.security.jwt.JwtUtils;
 import com.example.javaecommerce.security.services.UserDetailsImpl;
 import com.example.javaecommerce.services.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import com.example.javaecommerce.utils.JWTSecurity;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,10 +49,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
     private final UserMapper userMapper;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public List<UserResponse> getAllUsers() {
@@ -113,6 +120,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void saveVerificationTokenForUser(String token, UserEntity user) {
+        VerificationToken verificationToken = new VerificationToken(user, token);
+        verificationTokenRepository.save(verificationToken);
+    }
+
+    @Override
+    public String validateVerificationToken(String token) {
+        VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
+        if (verificationToken == null) {
+            return "invalid";
+        }
+        UserEntity user = verificationToken.getUser();
+        Calendar calendar = Calendar.getInstance();
+        if ((verificationToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
+            verificationTokenRepository.delete(verificationToken);
+            return "expired";
+        }
+        user.setEnabled(true);
+        userRepository.save(user);
+        return "valid";
+    }
+
+    @Override
     public JwtResponse login(@RequestBody final LoginRequest loginRequest) {
         var userEntity = userRepository.findByEmail(loginRequest.getEmail())
                 .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
@@ -128,7 +158,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse registerUser(final SignupRequest signupRequest) {
+    public UserResponse registerUser(final SignupRequest signupRequest, final HttpServletRequest httpServletRequest) {
         if (userRepository.existsByUsername(signupRequest.getUsername())) {
             throw new EcommerceRunTimeException(ErrorCode.ALREADY_EXIST);
         }
@@ -144,6 +174,9 @@ public class UserServiceImpl implements UserService {
         roles.add(userRole);
         user.setRoles(roles);
         UserEntity result = userRepository.save(user);
+        publisher.publishEvent(new RegistrationCompleteEvent(
+                result,
+                JWTSecurity.applicationUrl(httpServletRequest)));
         return userMapper.toUserResponse(result);
     }
 
