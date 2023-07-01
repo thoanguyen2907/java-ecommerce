@@ -1,12 +1,10 @@
 package com.example.javaecommerce.controller;
 
-import com.example.javaecommerce.exception.EcommerceRunTimeException;
-import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.model.request.CategoryRequest;
 import com.example.javaecommerce.model.response.CategoryResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.services.CategoryService;
-import com.example.javaecommerce.utils.CheckAuthorized;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

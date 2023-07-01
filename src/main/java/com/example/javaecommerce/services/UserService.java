@@ -1,5 +1,6 @@
 package com.example.javaecommerce.services;
 
+import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.LoginRequest;
 import com.example.javaecommerce.model.request.SignupRequest;
 import com.example.javaecommerce.model.request.UserRequest;
@@ -8,12 +9,16 @@ import com.example.javaecommerce.model.response.UserResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
 
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface UserService {
     List<UserResponse> getAllUsers();
+
     JwtResponse login(LoginRequest loginFormRequest);
-    UserResponse registerUser(SignupRequest signupRequest);
+
+    UserResponse registerUser(SignupRequest signupRequest, HttpServletRequest httpServletRequest);
+
     UserResponse addUser(UserRequest userRequest);
 
     void deleteUser(Long userID);
@@ -23,4 +28,8 @@ public interface UserService {
     PaginationPage<UserResponse> getUserByPagination(Integer offset, Integer limited);
 
     UserResponse aboutMe();
+
+    void saveVerificationTokenForUser(String token, UserEntity user);
+
+    String validateVerificationToken(String token);
 }

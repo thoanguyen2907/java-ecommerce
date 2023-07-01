@@ -4,6 +4,7 @@ import com.example.javaecommerce.security.services.UserDetailsImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 public final class JWTSecurity {
@@ -15,5 +16,10 @@ public final class JWTSecurity {
         } else {
             return Optional.empty();
         }
+    }
+    public static String applicationUrl(final HttpServletRequest httpServletRequest) {
+        return "http://" + httpServletRequest.getServerName()
+                + ":" + httpServletRequest.getServerPort()
+                + httpServletRequest.getContextPath();
     }
 }

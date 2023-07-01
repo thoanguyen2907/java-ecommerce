@@ -26,6 +26,7 @@ public class UserEntity extends BaseEntity {
     private String username;
     private String email;
     private String password;
+    private Boolean enabled;
 
     public UserEntity(final String email, final String password) {
         this.email = email;
