@@ -1,12 +1,16 @@
 package com.example.javaecommerce.controller;
 
+import com.example.javaecommerce.exception.EcommerceRunTimeException;
+import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.model.request.CategoryRequest;
 import com.example.javaecommerce.model.response.CategoryResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.services.CategoryService;
+import com.example.javaecommerce.utils.CheckAuthorized;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,7 +35,12 @@ public class CategoryController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addCategory(@Valid @RequestBody final CategoryRequest categoryRequest) {
+        boolean isAdmin = CheckAuthorized.isAuthorized("ADMIN");
+        if (!isAdmin) {
+            throw new EcommerceRunTimeException(ErrorCode.UNAUTHORIZED);
+        }
         CategoryResponse categoryResponse = categoryService.addCategory(categoryRequest);
         return ResponseEntity.ok(categoryResponse);
     }

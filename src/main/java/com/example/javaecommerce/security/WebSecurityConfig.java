@@ -73,6 +73,7 @@ public class WebSecurityConfig {
                 .antMatchers(HttpMethod.GET, "/api/v1/category/**").permitAll()
                 .antMatchers(HttpMethod.DELETE, "/api/v1/category/**").permitAll()
                 .antMatchers(HttpMethod.PUT, "/api/v1/category/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/category/**").authenticated()
                 .antMatchers(HttpMethod.POST, "/api/v1/orders/**").authenticated()
                 .anyRequest().authenticated();
 

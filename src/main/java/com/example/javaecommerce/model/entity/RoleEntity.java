@@ -4,9 +4,7 @@ import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -17,6 +15,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "roles")
 public class RoleEntity extends BaseEntity {
     @Id

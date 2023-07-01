@@ -5,10 +5,13 @@ import com.example.javaecommerce.exception.EcommerceRunTimeException;
 import com.example.javaecommerce.exception.ErrorCode;
 
 import com.example.javaecommerce.mapper.CategoryMapper;
+import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.entity.CategoryEntity;
 
 import com.example.javaecommerce.model.entity.ProductEntity;
 
+import com.example.javaecommerce.model.entity.RoleEntity;
+import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.request.CategoryRequest;
 
 import com.example.javaecommerce.model.response.CategoryResponse;
@@ -18,6 +21,8 @@ import com.example.javaecommerce.repository.CategoryRepository;
 
 import com.example.javaecommerce.repository.ProductRepository;
 ;
+import com.example.javaecommerce.security.services.UserDetailsImpl;
+import com.example.javaecommerce.security.services.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Before;
@@ -36,12 +41,20 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.example.javaecommerce.ResponseBodyMatcher.responseBody;
 import static com.example.javaecommerce.category.CategoryTestApi.*;
@@ -64,6 +77,8 @@ public class CategoryApiDelegateImplTest {
     @MockBean
     private ProductRepository productRepository;
     @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private CategoryMapper categoryMapper;
@@ -73,20 +88,124 @@ public class CategoryApiDelegateImplTest {
 
     @Before
     public void setUp() {
-        categoryId = new Random().nextLong();
+        categoryId = 1L;
         category = makeCategoryForSaving(categoryId);
         categoryRequest = prepareCategoryForRequesting();
     }
 
     @Test
-    public void givenMoreComplexCategoryData_whenSendData_thenReturnsCategoryCreated() throws Exception {
-        when(categoryRepository.save(Mockito.any())).thenReturn(category);
+    public void givenMoreComplexCategoryData_whenSendDataWithoutLogin_thenReturnsUnAuthenticated401() throws Exception {
+        // Mock the category repository save operation
+        Mockito.when(categoryRepository.save(Mockito.any())).thenAnswer(invocation -> {
+            CategoryEntity savedCategory = invocation.getArgument(0);
+            savedCategory.setId(categoryId);
+            return savedCategory;
+        });
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
+                        .content(IntegrationTestUtil.asJsonString(categoryRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(username = "thoapermission1@gmail.com", roles = "USER")
+    public void givenMoreComplexCategoryData_whenSendDataAfterAuthenticated_thenReturnsCategoryCreated() throws Exception {
+        // Mock the category repository save operation
+        Mockito.when(categoryRepository.save(Mockito.any())).thenAnswer(invocation -> {
+            CategoryEntity savedCategory = invocation.getArgument(0);
+            savedCategory.setId(categoryId);
+            return savedCategory;
+        });
+
         var expectedCategory = toCategoryResponse(category);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername("thoapermission1@gmail.com");
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
                         .content(IntegrationTestUtil.asJsonString(categoryRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(expectedCategory.getName()));
+                .andExpect(jsonPath("$.id").value(categoryId))
+                .andExpect(jsonPath("$.name").value(categoryRequest.getName()))
+                .andExpect(responseBody().containsObjectBody(expectedCategory, CategoryResponse.class, objectMapper));
+    }
+
+    @Test
+    @WithMockUser(username = "naratest@gmail.com", roles = "ADMIN")
+    public void givenMoreComplexCategoryData_whenSendDataAfterAuthenticatedRoleAdmin_thenReturnsCategoryCreated() throws Exception {
+        // Mock the category repository save operation
+        Mockito.when(categoryRepository.save(Mockito.any())).thenAnswer(invocation -> {
+            CategoryEntity savedCategory = invocation.getArgument(0);
+            savedCategory.setId(categoryId);
+            return savedCategory;
+        });
+
+        var expectedCategory = toCategoryResponse(category);
+
+        Set<RoleEntity> roles = new HashSet<>();
+        roles.add(RoleEntity.builder().name(ERole.ROLE_ADMIN).build());
+
+        Collection<GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+
+        UserDetails userDetails = UserDetailsImpl.builder()
+                .email("naratest@gmail.com")
+                .password("test")
+                .authorities(authorities)  // Set the role as "ADMIN"
+                .build();
+
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
+                        .content(IntegrationTestUtil.asJsonString(categoryRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(categoryId))
+                .andExpect(jsonPath("$.name").value(categoryRequest.getName()))
+                .andExpect(responseBody().containsObjectBody(expectedCategory, CategoryResponse.class, objectMapper));
+    }
+
+    @Test
+    @WithMockUser(username = "naratest@gmail.com", roles = "USER")
+    public void givenMoreComplexCategoryData_whenSendDataAfterAuthenticatedRoleUser_thenReturnsUnAuthorized() throws Exception {
+        // Mock the category repository save operation
+        Mockito.when(categoryRepository.save(Mockito.any())).thenAnswer(invocation -> {
+            CategoryEntity savedCategory = invocation.getArgument(0);
+            savedCategory.setId(categoryId);
+            return savedCategory;
+        });
+
+        Set<RoleEntity> roles = new HashSet<>();
+        roles.add(RoleEntity.builder().name(ERole.ROLE_USER).build());
+
+        Collection<GrantedAuthority> authorities = roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+
+        UserDetails userDetails = UserDetailsImpl.builder()
+                .email("naratest@gmail.com")
+                .password("test")
+                .authorities(authorities)  // Set the role as "ADMIN"
+                .build();
+
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
+                        .content(IntegrationTestUtil.asJsonString(categoryRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
     @Test

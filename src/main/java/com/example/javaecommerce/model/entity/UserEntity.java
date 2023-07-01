@@ -3,9 +3,7 @@ package com.example.javaecommerce.model.entity;
 import com.example.javaecommerce.model.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,6 +15,8 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
+@Builder
 @Table(name = "users")
 public class UserEntity extends BaseEntity {
     @Id
