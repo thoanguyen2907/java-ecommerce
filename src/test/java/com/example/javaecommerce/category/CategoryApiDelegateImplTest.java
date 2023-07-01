@@ -11,7 +11,7 @@ import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
 
 import com.example.javaecommerce.model.entity.RoleEntity;
-import com.example.javaecommerce.model.entity.UserEntity;
+
 import com.example.javaecommerce.model.request.CategoryRequest;
 
 import com.example.javaecommerce.model.response.CategoryResponse;
@@ -21,6 +21,7 @@ import com.example.javaecommerce.repository.CategoryRepository;
 
 import com.example.javaecommerce.repository.ProductRepository;
 ;
+import com.example.javaecommerce.security.jwt.JwtUtils;
 import com.example.javaecommerce.security.services.UserDetailsImpl;
 import com.example.javaecommerce.security.services.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +80,8 @@ public class CategoryApiDelegateImplTest {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
     @Autowired
+    private JwtUtils jwtUtils;
+    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private CategoryMapper categoryMapper;
@@ -124,7 +127,7 @@ public class CategoryApiDelegateImplTest {
         Collection<GrantedAuthority> authorities = roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
-      //  UserDetails userDetails = userDetailsService.loadUserByUsername("thoaadmin2@gmail.com");
+
         UserDetails userDetails = UserDetailsImpl.builder()
                 .email("naraalice@gmail.com")
                 .password("123123")
@@ -134,10 +137,12 @@ public class CategoryApiDelegateImplTest {
                 userDetails, null, userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwtToken = jwtUtils.generateJwtToken(authentication);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
                         .content(IntegrationTestUtil.asJsonString(categoryRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(categoryId))
                 .andExpect(jsonPath("$.name").value(categoryRequest.getName()))
@@ -210,10 +215,12 @@ public class CategoryApiDelegateImplTest {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwtToken = jwtUtils.generateJwtToken(authentication);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
                         .content(IntegrationTestUtil.asJsonString(categoryRequest))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isForbidden());
     }
 
