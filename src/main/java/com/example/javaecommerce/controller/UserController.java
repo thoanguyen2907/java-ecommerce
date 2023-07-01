@@ -6,6 +6,7 @@ import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAllUsers() {
         List<UserResponse> userResponse = userService.getAllUsers();
         return ResponseEntity.ok(userResponse);

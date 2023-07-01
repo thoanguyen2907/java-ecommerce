@@ -1,12 +1,16 @@
 package com.example.javaecommerce.controller;
 
+import com.example.javaecommerce.exception.EcommerceRunTimeException;
+import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.model.request.CategoryRequest;
 import com.example.javaecommerce.model.response.CategoryResponse;
 import com.example.javaecommerce.pagination.PaginationPage;
 import com.example.javaecommerce.services.CategoryService;
+import com.example.javaecommerce.utils.CheckAuthorized;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,18 +23,19 @@ public class CategoryController {
 
 
     @GetMapping
-    public PaginationPage<CategoryResponse> getAllCategoriesPagination(@RequestParam(name = "offset", defaultValue = "1") final Integer offset,
+    public PaginationPage<CategoryResponse> getAllCategoriesPagination(@RequestParam(name = "offset", defaultValue = "0") final Integer offset,
                                                                        @RequestParam(name = "limit", defaultValue = "10") final Integer limit) {
         var categoryList = categoryService.getAllCategoriesPagination(offset, limit);
         return categoryList;
     }
 
     @GetMapping(path = "{categoryId}")
-    public CategoryResponse getCategoryById(@PathVariable("categoryId") final Long categoryId) {
-        return categoryService.getCategoryById(categoryId);
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable("categoryId") final Long categoryId) {
+        return ResponseEntity.ok(categoryService.getCategoryById(categoryId));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addCategory(@Valid @RequestBody final CategoryRequest categoryRequest) {
         CategoryResponse categoryResponse = categoryService.addCategory(categoryRequest);
         return ResponseEntity.ok(categoryResponse);
@@ -46,9 +51,10 @@ public class CategoryController {
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> updateCategory(@RequestBody final CategoryRequest categoryRequest, @PathVariable final Long id) {
-        CategoryResponse categoryResponse = categoryService.updateCategory(categoryRequest, id);
+    @PutMapping(path = "{categoryId}")
+    public ResponseEntity<?> updateCategory(@Valid @RequestBody final CategoryRequest categoryRequest,
+                                            @PathVariable final Long categoryId) {
+        CategoryResponse categoryResponse = categoryService.updateCategory(categoryRequest, categoryId);
         return ResponseEntity.ok(categoryResponse);
     }
 }

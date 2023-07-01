@@ -1,7 +1,8 @@
 package com.example.javaecommerce.services.impl;
 
 import com.example.javaecommerce.converter.Converter;
-import com.example.javaecommerce.exception.ResourceNotFoundException;
+import com.example.javaecommerce.exception.EcommerceRunTimeException;
+import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.mapper.ProductMapper;
 import com.example.javaecommerce.model.entity.CategoryEntity;
 import com.example.javaecommerce.model.entity.ProductEntity;
@@ -75,7 +76,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse addProduct(final ProductRequest productRequest) {
         ProductEntity productEntity = Converter.toModel(productRequest, ProductEntity.class);
         CategoryEntity category = categoryRepository.findById(productRequest.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("category", "id", productRequest.getCategoryId())
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND)
                 );
         productEntity.setCategory(category);
         var result = productRepository.save(productEntity);
@@ -92,7 +93,7 @@ public class ProductServiceImpl implements ProductService {
                     product.setCountInStock(productRequest.getCountInStock());
                     product.setRating(productRequest.getRating());
                     return productRepository.save(product);
-                }).orElseThrow(() -> new ResourceNotFoundException("product", "id", id));
+                }).orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         return productMapper.toProductResponse(productEntity);
     }
 
@@ -104,17 +105,15 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductResponse getProductById(final Long productId) {
         ProductEntity productEntity = productRepository.findById(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("product", "id", productId));
-
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         return productMapper.toProductResponse(productEntity);
 
     }
 
     @Transient
     public int calculateRating(final Long productId, final int rating) {
-        ProductEntity productEntity = productRepository.findById(productId).orElseThrow(() -> new IllegalStateException(
-                "product with id " + " does not exist"
-        ));
+        ProductEntity productEntity = productRepository
+                .findById(productId).orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
         ReviewEntity reviewEntity = new ReviewEntity();
         int currentRating = productEntity.getRating();
         int averageRating = (currentRating + rating) / 2;
@@ -126,17 +125,16 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductResponse> getProductListByCategoryId(final Long categoryId) {
         if (categoryRepository.existsById(categoryId)) {
-            throw new RuntimeException("cant find the categrofy");
+            throw new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND);
         }
         List<ProductEntity> productEntities = productRepository.findByCategoryId(categoryId);
-
         return productMapper.toListProductResponse(productEntities);
     }
 
     @Override
     public void deleteProductsOfCategory(final Long categoryId) {
         if (categoryRepository.existsById(categoryId)) {
-            throw new RuntimeException("cant find category");
+            throw new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND);
         }
         productRepository.deleteByCategoryId(categoryId);
     }

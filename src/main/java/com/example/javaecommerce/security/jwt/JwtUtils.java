@@ -14,7 +14,6 @@ import java.util.Date;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     public static final String ISSUER_GENERATE_TOKEN = "StackAbuse";
-    public static final String ISSUER_GENERATE_REFRESH_TOKEN = "Therapex";
     public static final String SIGNING_KEY = "HelloWorld";
 
     public String generateJwtToken(final Authentication authentication) {
