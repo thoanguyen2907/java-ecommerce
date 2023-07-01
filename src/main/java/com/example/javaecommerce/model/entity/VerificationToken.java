@@ -32,14 +32,14 @@ public class VerificationToken extends BaseEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserEntity user;
 
-    public VerificationToken(UserEntity user, String token) {
+    public VerificationToken(final UserEntity user, final String token) {
         super();
         this.token = token;
         this.user = user;
         this.expirationTime = calculateExpirationDate(EXPIRATION_TIME);
     }
 
-    public Date calculateExpirationDate(int expirationTime) {
+    public Date calculateExpirationDate(final int expirationTime) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(new Date().getTime());
         calendar.add(Calendar.MINUTE, expirationTime);

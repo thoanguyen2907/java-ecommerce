@@ -1,6 +1,5 @@
 package com.example.javaecommerce.controller;
 
-import com.example.javaecommerce.event.RegistrationCompleteEvent;
 import com.example.javaecommerce.model.request.LoginRequest;
 import com.example.javaecommerce.model.request.SignupRequest;
 
@@ -35,9 +34,9 @@ public class AuthController {
     }
 
     @GetMapping("/verifyRegistration")
-    public String verifyRegistration(@RequestParam("token") String token){
+    public String verifyRegistration(@RequestParam("token") final String token) {
         String result = userService.validateVerificationToken(token);
-        if(result.equalsIgnoreCase("valid")){
+        if (result.equalsIgnoreCase("valid")) {
             return "User is verified successfully";
         }
         return "Failed to verify";

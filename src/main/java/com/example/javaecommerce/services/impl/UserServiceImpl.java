@@ -120,13 +120,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveVerificationTokenForUser(String token, UserEntity user) {
+    public void saveVerificationTokenForUser(final String token, final UserEntity user) {
         VerificationToken verificationToken = new VerificationToken(user, token);
         verificationTokenRepository.save(verificationToken);
     }
 
     @Override
-    public String validateVerificationToken(String token) {
+    public String validateVerificationToken(final String token) {
         VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
         if (verificationToken == null) {
             return "invalid";

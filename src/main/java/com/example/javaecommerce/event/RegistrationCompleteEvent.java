@@ -12,7 +12,7 @@ public class RegistrationCompleteEvent extends ApplicationEvent {
     private UserEntity user;
     private String applicationUrl;
 
-    public RegistrationCompleteEvent(UserEntity user, String applicationUrl) {
+    public RegistrationCompleteEvent(final UserEntity user, final String applicationUrl) {
         super(user);
         this.user = user;
         this.applicationUrl = applicationUrl;

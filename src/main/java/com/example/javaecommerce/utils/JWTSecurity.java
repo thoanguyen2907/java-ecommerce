@@ -17,7 +17,7 @@ public final class JWTSecurity {
             return Optional.empty();
         }
     }
-    public static String applicationUrl(HttpServletRequest httpServletRequest) {
+    public static String applicationUrl(final HttpServletRequest httpServletRequest) {
         return "http://" + httpServletRequest.getServerName()
                 + ":" + httpServletRequest.getServerPort()
                 + httpServletRequest.getContextPath();

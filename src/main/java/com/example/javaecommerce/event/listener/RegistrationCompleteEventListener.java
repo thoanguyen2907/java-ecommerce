@@ -23,7 +23,7 @@ public class RegistrationCompleteEventListener implements ApplicationListener<Re
     private UserService userService;
 
     @Override
-    public void onApplicationEvent(RegistrationCompleteEvent event) {
+    public void onApplicationEvent(final RegistrationCompleteEvent event) {
         // Create verification token for the user with the link
         UserEntity user = event.getUser();
         String token = String.valueOf(UUID.randomUUID());
