@@ -170,7 +170,6 @@ public class UserServiceImpl implements UserService {
             String urlLink = applicationUrl + "/api/auth/savePassword?token=" + token;
             // handle in method createPasswordResetTokenForUser with user, token , url
             createPasswordResetTokenForUser(user, token, urlLink);
-
         }
     }
 
@@ -206,19 +205,16 @@ public class UserServiceImpl implements UserService {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        return new JwtResponse(jwt, userEntity.getId(), userEntity.getUsername(), userEntity.getEmail(), roles);
+        return new JwtResponse(jwt, userEntity.getId(), userEntity.getEmail(), roles);
     }
 
     @Override
     @Transactional
     public UserResponse registerUser(final SignupRequest signupRequest, final HttpServletRequest httpServletRequest) {
-        if (userRepository.existsByUsername(signupRequest.getUsername())) {
-            throw new EcommerceRunTimeException(ErrorCode.ALREADY_EXIST);
-        }
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
             throw new EcommerceRunTimeException(ErrorCode.ALREADY_EXIST);
         }
-        UserEntity user = new UserEntity(signupRequest.getUsername(),
+        UserEntity user = new UserEntity(
                 signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()));
 

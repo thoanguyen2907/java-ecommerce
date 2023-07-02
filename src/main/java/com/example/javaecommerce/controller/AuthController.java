@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = "/api/auth")
@@ -33,7 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody final SignupRequest signupRequest, final HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody final SignupRequest signupRequest, final HttpServletRequest httpServletRequest) {
         var newUser = userService.registerUser(signupRequest, httpServletRequest);
         return ResponseEntity.ok(newUser);
     }
@@ -53,7 +54,7 @@ public class AuthController {
     }
 
     @PostMapping("/savePassword")
-    public ResponseEntity<?> savePassword(@RequestParam("token")final  String token,
+    public ResponseEntity<?> savePassword(@RequestParam("token") final String token,
                                           @RequestBody final PasswordResetModel passwordResetModel) {
         userService.resetPassword(token, passwordResetModel);
         return ResponseEntity.ok("Password reset successfully");

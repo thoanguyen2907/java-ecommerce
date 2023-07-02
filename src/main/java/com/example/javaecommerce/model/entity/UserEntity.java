@@ -23,21 +23,16 @@ public class UserEntity extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(columnDefinition = "id", updatable = false, nullable = false)
     private Long id;
-    private String username;
     private String email;
     private String password;
-    private Boolean enabled;
+
+    private Boolean enabled = false;
 
     public UserEntity(final String email, final String password) {
         this.email = email;
         this.password = password;
     }
 
-    public UserEntity(final String username, final String email, final String password) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-    }
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
             CascadeType.PERSIST, CascadeType.MERGE
