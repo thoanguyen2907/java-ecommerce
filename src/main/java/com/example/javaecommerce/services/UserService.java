@@ -35,7 +35,6 @@ public interface UserService {
 
     void checkAndCreatePasswordResetTokenForUser(ResetEmail resetEmail, HttpServletRequest request);
 
-    void saveResetPassword(UserEntity user, PasswordResetModel passwordResetModel);
 
     void resetPassword(String token, PasswordResetModel passwordResetModel);
 }
