@@ -1,6 +1,7 @@
 package com.example.javaecommerce.event.listener;
 
 import com.example.javaecommerce.event.ForgotPasswordCompleteEvent;
+import com.example.javaecommerce.model.EmailType;
 import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.security.jwt.AuthEntryPointJwt;
 import com.example.javaecommerce.utils.EmailService;
@@ -24,14 +25,10 @@ public class ForgotPasswordCompleteEventListener implements ApplicationListener<
     public void onApplicationEvent(final ForgotPasswordCompleteEvent event) {
         UserEntity user = event.getUser();
         String urlLink = event.getApplicationUrl();
-
-        // Compose the email
+        // get user email
         String to = user.getEmail();
-        String subject = "Email Forgot password";
-        String body = "Please click the following link to change the password your email: " + urlLink;
-        // Send the email
-        emailService.sendEmail(to, subject, body);
-
+        //send type of email , user email and url link including token
+        emailService.sendEmail(to, EmailType.FORGOT_PASSWORD, urlLink);
         logger.info("Forgot password email email sent to: {}", to);
     }
 }

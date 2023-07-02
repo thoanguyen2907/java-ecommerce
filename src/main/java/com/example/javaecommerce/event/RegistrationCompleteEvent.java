@@ -11,10 +11,12 @@ public class RegistrationCompleteEvent extends ApplicationEvent {
 
     private UserEntity user;
     private String applicationUrl;
+    private String token;
 
-    public RegistrationCompleteEvent(final UserEntity user, final String applicationUrl) {
+    public RegistrationCompleteEvent(final UserEntity user, final String applicationUrl, final String token) {
         super(user);
         this.user = user;
         this.applicationUrl = applicationUrl;
+        this.token = token;
     }
 }

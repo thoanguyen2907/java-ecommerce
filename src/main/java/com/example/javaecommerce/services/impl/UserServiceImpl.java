@@ -146,6 +146,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void createPasswordResetTokenForUser(final UserEntity user, final String token, final String urlLink) {
+        // save password reset token in db, and trigger event forgot to send email with user, url, token
         PasswordResetToken passwordResetToken = new PasswordResetToken(user, token);
         passwordResetTokenRepository.save(passwordResetToken);
         //push the event to send email forgot password to user
@@ -157,38 +158,41 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void checkAndCreatePasswordResetTokenForUser(final ResetEmail resetEmail, final HttpServletRequest request) {
+        // user send email to reset the password, check user email existed or not
         UserEntity user = userRepository.findByEmail(resetEmail.getEmail())
                 .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
+        // user email existed
         if (user != null) {
+            // create token and url link
             String token = UUID.randomUUID().toString();
             var applicationUrl = JWTSecurity.applicationUrl(request);
             //send link url and password token to user email
             String urlLink = applicationUrl + "/api/auth/savePassword?token=" + token;
+            // handle in method createPasswordResetTokenForUser with user, token , url
             createPasswordResetTokenForUser(user, token, urlLink);
 
         }
     }
 
     @Override
-    public void saveResetPassword(final UserEntity user, final PasswordResetModel passwordResetModel) {
-        user.setPassword(passwordEncoder.encode(passwordResetModel.getNewPassword()));
-        userRepository.save(user);
-    }
-
-    @Override
     public void resetPassword(final String token, final PasswordResetModel passwordResetModel) {
+        // compare password token existed in db or not
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+        // if password token is not existed, throw invalid token
         if (passwordResetToken == null) {
             throw new EcommerceRunTimeException(ErrorCode.INVALID_TOKEN);
         }
+        // if password token existed, get user
         UserEntity user = passwordResetToken.getUser();
         Calendar calendar = Calendar.getInstance();
+        // compare the time -> expired or not
         if ((passwordResetToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
             passwordResetTokenRepository.delete(passwordResetToken);
-           throw new EcommerceRunTimeException(ErrorCode.EXPIRED_TOKEN);
+            throw new EcommerceRunTimeException(ErrorCode.EXPIRED_TOKEN);
         }
+        // if valid token and time, set new password and save
+        user.setPassword(passwordEncoder.encode(passwordResetModel.getNewPassword()));
         userRepository.save(user);
-        saveResetPassword(user, passwordResetModel);
     }
 
     @Override
@@ -217,15 +221,21 @@ public class UserServiceImpl implements UserService {
         UserEntity user = new UserEntity(signupRequest.getUsername(),
                 signupRequest.getEmail(),
                 passwordEncoder.encode(signupRequest.getPassword()));
+
         Set<RoleEntity> roles = new HashSet<>();
         RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
                 .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
+
         roles.add(userRole);
         user.setRoles(roles);
         UserEntity result = userRepository.save(user);
+        //after create new user, create and save verified token and send email
+        String token = String.valueOf(UUID.randomUUID());
+        saveVerificationTokenForUser(token, user);
         publisher.publishEvent(new RegistrationCompleteEvent(
                 result,
-                JWTSecurity.applicationUrl(httpServletRequest)));
+                JWTSecurity.applicationUrl(httpServletRequest),
+                token));
         return userMapper.toUserResponse(result);
     }
 

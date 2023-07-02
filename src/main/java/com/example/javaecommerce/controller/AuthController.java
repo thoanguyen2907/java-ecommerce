@@ -50,7 +50,6 @@ public class AuthController {
     @PostMapping("/resetPassword")
     public void resetPassword(@RequestBody final ResetEmail resetEmail, final HttpServletRequest request) {
         userService.checkAndCreatePasswordResetTokenForUser(resetEmail, request);
-
     }
 
     @PostMapping("/savePassword")
