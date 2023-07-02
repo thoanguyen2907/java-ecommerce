@@ -1,11 +1,10 @@
 package com.example.javaecommerce.event.listener;
 
 import com.example.javaecommerce.event.ForgotPasswordCompleteEvent;
-import com.example.javaecommerce.event.RegistrationCompleteEvent;
 import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.security.jwt.AuthEntryPointJwt;
-import com.example.javaecommerce.services.UserService;
 import com.example.javaecommerce.utils.EmailService;
+
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +20,8 @@ public class ForgotPasswordCompleteEventListener implements ApplicationListener<
 
     private final EmailService emailService;
 
-    private final UserService userService;
-
     @Override
-    public void onApplicationEvent(ForgotPasswordCompleteEvent event) {
+    public void onApplicationEvent(final ForgotPasswordCompleteEvent event) {
         UserEntity user = event.getUser();
         String urlLink = event.getApplicationUrl();
 

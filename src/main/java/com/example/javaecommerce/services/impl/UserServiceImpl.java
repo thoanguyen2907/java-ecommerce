@@ -10,10 +10,7 @@ import com.example.javaecommerce.model.entity.PasswordResetToken;
 import com.example.javaecommerce.model.entity.RoleEntity;
 import com.example.javaecommerce.model.entity.UserEntity;
 import com.example.javaecommerce.model.entity.VerificationToken;
-import com.example.javaecommerce.model.request.LoginRequest;
-import com.example.javaecommerce.model.request.PasswordResetModel;
-import com.example.javaecommerce.model.request.SignupRequest;
-import com.example.javaecommerce.model.request.UserRequest;
+import com.example.javaecommerce.model.request.*;
 import com.example.javaecommerce.model.response.JwtResponse;
 
 import com.example.javaecommerce.model.response.UserResponse;
@@ -148,14 +145,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity findUserByEmail(String email) {
-        UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
-        return user;
-    }
-
-    @Override
-    public void createPasswordResetTokenForUser(UserEntity user, String token, String urlLink) {
+    public void createPasswordResetTokenForUser(final UserEntity user, final String token, final String urlLink) {
         PasswordResetToken passwordResetToken = new PasswordResetToken(user, token);
         passwordResetTokenRepository.save(passwordResetToken);
         //push the event to send email forgot password to user
@@ -166,31 +156,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String validatePasswordResetToken(String token) {
+    public void checkAndCreatePasswordResetTokenForUser(final ResetEmail resetEmail, final HttpServletRequest request) {
+        UserEntity user = userRepository.findByEmail(resetEmail.getEmail())
+                .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND));
+        if (user != null) {
+            String token = UUID.randomUUID().toString();
+            var applicationUrl = JWTSecurity.applicationUrl(request);
+            //send link url and password token to user email
+            String urlLink = applicationUrl + "/api/auth/savePassword?token=" + token;
+            createPasswordResetTokenForUser(user, token, urlLink);
+
+        }
+    }
+
+    @Override
+    public void saveResetPassword(final UserEntity user, final PasswordResetModel passwordResetModel) {
+        user.setPassword(passwordEncoder.encode(passwordResetModel.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    @Override
+    public void resetPassword(final String token, final PasswordResetModel passwordResetModel) {
         PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
         if (passwordResetToken == null) {
-            return "invalid";
+            throw new EcommerceRunTimeException(ErrorCode.INVALID_TOKEN);
         }
         UserEntity user = passwordResetToken.getUser();
         Calendar calendar = Calendar.getInstance();
         if ((passwordResetToken.getExpirationTime().getTime() - calendar.getTime().getTime()) <= 0) {
             passwordResetTokenRepository.delete(passwordResetToken);
-            return "expired";
+           throw new EcommerceRunTimeException(ErrorCode.EXPIRED_TOKEN);
         }
         userRepository.save(user);
-        return "valid";
-    }
-
-    @Override
-    public UserEntity getUserByPasswordResetToken(String token) {
-        UserEntity user = passwordResetTokenRepository.findByToken(token).getUser();
-        return user;
-    }
-
-    @Override
-    public void saveResetPassword(UserEntity user, PasswordResetModel passwordResetModel) {
-        user.setPassword(passwordEncoder.encode(passwordResetModel.getNewPassword()));
-        userRepository.save(user);
+        saveResetPassword(user, passwordResetModel);
     }
 
     @Override

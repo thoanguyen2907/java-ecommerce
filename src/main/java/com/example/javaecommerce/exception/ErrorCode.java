@@ -13,6 +13,8 @@ public enum ErrorCode implements CommonErrorCode {
     SIGNATURE_NOT_CORRECT(HttpStatus.FORBIDDEN, "40001", "Signature not correct"),
     EXPIRED(HttpStatus.FORBIDDEN, "40003", "Expired"),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "403", "Unauthorized"),
+    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "400", "Invalid token"),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "401", "Token is expired"),
     UNAUTHENTICATED(HttpStatus.UNAUTHORIZED, "401", "Unauthenticated. Please log in"),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "400", "validation.error"),
     ALREADY_EXIST(HttpStatus.INTERNAL_SERVER_ERROR, "500", "Account already exist!"),
