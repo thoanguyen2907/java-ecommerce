@@ -1,17 +1,22 @@
 package com.example.javaecommerce.controller;
 
+import com.example.javaecommerce.model.request.PasswordResetModel;
 import com.example.javaecommerce.model.request.LoginRequest;
+import com.example.javaecommerce.model.request.ResetEmail;
 import com.example.javaecommerce.model.request.SignupRequest;
 
+import com.example.javaecommerce.security.jwt.AuthEntryPointJwt;
 import com.example.javaecommerce.services.UserService;
+;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.context.ApplicationEventPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-
 
 @RestController
 @RequestMapping(path = "/api/auth")
@@ -19,7 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 public class AuthController {
 
     private final UserService userService;
-    private final ApplicationEventPublisher publisher;
+    private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
 
     @PostMapping("/signin")
     public ResponseEntity<?> login(@RequestBody final LoginRequest loginRequest) {
@@ -40,6 +45,19 @@ public class AuthController {
             return "User is verified successfully";
         }
         return "Failed to verify";
+    }
+
+    @PostMapping("/resetPassword")
+    public void resetPassword(@RequestBody final ResetEmail resetEmail, final HttpServletRequest request) {
+        userService.checkAndCreatePasswordResetTokenForUser(resetEmail, request);
+
+    }
+
+    @PostMapping("/savePassword")
+    public ResponseEntity<?> savePassword(@RequestParam("token")final  String token,
+                                          @RequestBody final PasswordResetModel passwordResetModel) {
+        userService.resetPassword(token, passwordResetModel);
+        return ResponseEntity.ok("Password reset successfully");
     }
 
 }
