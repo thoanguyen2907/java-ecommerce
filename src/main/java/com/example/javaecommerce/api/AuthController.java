@@ -12,7 +12,6 @@ import com.example.javaecommerce.repository.UserRepository;
 import com.example.javaecommerce.security.jwt.JwtUtils;
 import com.example.javaecommerce.security.services.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,11 +19,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,19 +34,18 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "api/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    JwtUtils jwtUtils;
+
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                         loginRequest.getPassword())
@@ -65,39 +64,40 @@ public class AuthController {
                 userDetails.getEmail(),
                 roles));
     }
+
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest){
-        if(userRepository.existsByUsername(signupRequest.getUsername())){
+    public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
+        if (userRepository.existsByUsername(signupRequest.getUsername())) {
             return ResponseEntity.badRequest().body(new MessageResponse(
-                  "Error : Username is already taken !!"
+                    "Error : Username is already taken !!"
             ));
         }
-        if(userRepository.existsByEmail(signupRequest.getEmail())){
+        if (userRepository.existsByEmail(signupRequest.getEmail())) {
             return ResponseEntity.badRequest().body(
                     new MessageResponse("Error : Email is already in use! "));
         }
         UserEntity user = new UserEntity(signupRequest.getUsername(),
                 signupRequest.getEmail(),
-               passwordEncoder.encode( signupRequest.getPassword())) ;
-        Set<String> strRoles =  signupRequest.getRole();
-        Set<RoleEntity> roles =   new HashSet<>();
-        if(strRoles == null){
-            RoleEntity userRole =    roleRepository.findByName(ERole.ROLE_USER)
+                passwordEncoder.encode(signupRequest.getPassword()));
+        Set<String> strRoles = signupRequest.getRole();
+        Set<RoleEntity> roles = new HashSet<>();
+        if (strRoles == null) {
+            RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
                     .orElseThrow(() -> new RuntimeException("Error : Role is not found "));
-          roles.add(userRole);   
-        }else {
+            roles.add(userRole);
+        } else {
             strRoles.forEach(role -> {
-                switch (role){
+                switch (role) {
                     case "admin":
                         RoleEntity adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(()-> new RuntimeException("Error : Role is not found"));
+                                .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
                         roles.add(adminRole);
                         break;
                     case "mod":
                         RoleEntity modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
                                 .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
                         roles.add(modRole);
-                         break;
+                        break;
                     default:
                         RoleEntity userRole = roleRepository.findByName(ERole.ROLE_USER)
                                 .orElseThrow(() -> new RuntimeException("Error : Role is not found"));
@@ -107,6 +107,14 @@ public class AuthController {
         }
         user.setRoles(roles);
         userRepository.save(user);
-        return  ResponseEntity.ok(new MessageResponse("User registered successfully")); 
+        return ResponseEntity.ok(new MessageResponse("User registered successfully"));
+    }
+
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
     }
 }

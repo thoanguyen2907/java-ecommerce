@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping(path = "api/v1/roles")
 @RequiredArgsConstructor
 public class RoleController {
-    private RoleService roleService;
+    private final RoleService roleService;
     @GetMapping
     public ResponseEntity<?> getAllRoles() {
         List<RoleResponse> roleResponses = roleService.getAllRoles();
