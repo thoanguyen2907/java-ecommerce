@@ -23,7 +23,7 @@ import com.example.javaecommerce.repository.ProductRepository;
 ;
 import com.example.javaecommerce.security.jwt.JwtUtils;
 import com.example.javaecommerce.security.services.UserDetailsImpl;
-import com.example.javaecommerce.security.services.UserDetailsServiceImpl;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Before;
@@ -78,8 +78,6 @@ public class CategoryApiDelegateImplTest {
     @MockBean
     private ProductRepository productRepository;
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-    @Autowired
     private JwtUtils jwtUtils;
     @Autowired
     private ObjectMapper objectMapper;
@@ -98,12 +96,13 @@ public class CategoryApiDelegateImplTest {
 
     @Test
     public void givenMoreComplexCategoryData_whenSendDataWithoutLogin_thenReturnsUnAuthenticated401() throws Exception {
-        // Mock the category repository save operation
+        // Mock the category repository
         Mockito.when(categoryRepository.save(Mockito.any())).thenAnswer(invocation -> {
             CategoryEntity savedCategory = invocation.getArgument(0);
             savedCategory.setId(categoryId);
             return savedCategory;
         });
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/category")
                         .content(IntegrationTestUtil.asJsonString(categoryRequest))
                         .contentType(MediaType.APPLICATION_JSON))
