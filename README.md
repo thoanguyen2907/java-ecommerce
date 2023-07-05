@@ -6,7 +6,7 @@ This project is an eCommerce application that provides RESTful APIs for managing
 
 - CRUD operations for products, categories, roles, users, and orders
 - User functionalities:
-    - User authentication (login, logout, register)
+    - User authentication (login, logout, register, forgot password, email verification)
     - Authorization for accessing public and protected endpoints
 - Data Modeling:
     - Establishing relationships among tables/entities
