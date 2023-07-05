@@ -3,6 +3,8 @@ package com.example.javaecommerce.model.base;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
@@ -17,21 +19,25 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public abstract class BaseEntity extends IdBase {
+public abstract class BaseEntity {
 
-    @Column(name = "createddate")
+    @Column(name = "created_date")
     @CreatedDate
+    @JsonIgnore
     private Date createdDate;
 
-    @Column(name = "modifieddate")
+    @Column(name = "modified_date")
     @LastModifiedDate
+    @JsonIgnore
     private Date modifiedDate;
 
-    @Column(name = "createdby")
+    @Column(name = "created_dby")
     @CreatedBy
+    @JsonIgnore
     private String createdBy;
 
-    @Column(name = "modifiedby" )
+    @Column(name = "modified_by" )
     @LastModifiedBy
+    @JsonIgnore
     private String modifiedBy;
 }

@@ -4,14 +4,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 @NoArgsConstructor
 public class SignupRequest {
-private String username;
-private String email;
-private Set<String> role;
-private  String password;
+    @NotBlank(message = "email must not be empty")
+    private String email;
+    @NotBlank(message = "password must not be empty")
+    private String password;
 }

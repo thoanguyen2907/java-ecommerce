@@ -1,6 +1,6 @@
 package com.example.javaecommerce.model.request;
 
-import com.example.javaecommerce.model.entity.OrderDetailEntity;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,11 +15,11 @@ public class OrderRequest {
     private String city;
     private String country;
     private String email;
-    private String postal_code;
-    private String first_name;
-    private String last_name;
+    private String postalCode;
+    private String firstName;
+    private String lastName;
     private String phone;
     private float totalPrice;
-    private List<OrderDetailEntity> orderItems;
-    private  String userId;
+    private List<CartItemRequest> cartItems;
+    private String userId;
 }

@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReviewRequest {
-    private  Long productId;
-    private  float rating;
+    private Long productId;
+    private float rating;
 }

@@ -1,11 +1,7 @@
 package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.base.BaseEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -15,9 +11,15 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "products")
 public class ProductEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "id", updatable = false, nullable = false)
+    private Long id;
     @NotBlank(message = "name must not be empty")
     private String name;
     private String image;
@@ -28,12 +30,14 @@ public class ProductEntity extends BaseEntity {
     @NotBlank(message = "description must not be empty")
     private String description;
     private int rating;
-    @NotNull(message= "price may not be empty")
+    @NotNull(message = "price may not be empty")
     private int price;
-    @NotNull(message= "number of stock may not be empty")
-    private int count_in_stock;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @NotNull(message = "number of stock may not be empty")
+    private int countInStock;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    @OnDelete(action= OnDeleteAction.CASCADE)
     private CategoryEntity category;
 }
+
+
