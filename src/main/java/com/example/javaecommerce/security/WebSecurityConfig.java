@@ -7,6 +7,7 @@ import com.example.javaecommerce.security.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Bean;
+
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -27,6 +28,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
+
 public class WebSecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
@@ -57,6 +59,7 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
     @Bean
     public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
