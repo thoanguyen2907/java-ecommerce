@@ -49,6 +49,6 @@ The application will be accessible at [http://localhost:8080](http://localhost:8
 
 ## Documentation
 
-For detailed API documentation and examples, please refer to the [API Documentation](docs/api-documentation.md) file.
+For detailed API documentation and examples, please refer to the [API Documentation](http://localhost:8080/swagger-ui/index.html) file.
 
 
