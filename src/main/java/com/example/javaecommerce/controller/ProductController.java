@@ -27,7 +27,6 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    @PreAuthorize("hasRole('USER')  or hasRole('ADMIN')")
     public ResponseEntity<?> getAllProducts(@RequestParam(name = "offset", defaultValue = "0") final Integer offset,
                                             @RequestParam(name = "limit", defaultValue = "3") final Integer limit) {
         PaginationPage<ProductResponse> productResponses = productService.getAllProducts(offset, limit);
