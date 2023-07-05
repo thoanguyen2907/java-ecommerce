@@ -106,5 +106,4 @@ public class WebSecurityConfig {
                 new AntPathRequestMatcher("/api/v1/orders/**", HttpMethod.POST.name())
         );
     }
-
 }
