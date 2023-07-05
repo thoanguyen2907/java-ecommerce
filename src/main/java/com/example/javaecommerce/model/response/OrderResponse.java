@@ -1,20 +1,25 @@
 package com.example.javaecommerce.model.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderResponse {
     private String address;
     private String city;
     private String country;
     private String email;
-    private String postal_code;
-    private String first_name;
-    private String last_name;
+    private String postalCode;
+    private String firstName;
+    private String lastName;
     private String phone;
-    private float price;
-    private int quantity;
-    private boolean status;
+    private UserResponse user;
+    private List<OrderDetailResponse> orderDetails;
 }

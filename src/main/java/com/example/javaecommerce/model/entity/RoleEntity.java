@@ -2,9 +2,9 @@ package com.example.javaecommerce.model.entity;
 
 import com.example.javaecommerce.model.ERole;
 import com.example.javaecommerce.model.base.BaseEntity;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -15,8 +15,14 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "roles")
 public class RoleEntity extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "id", updatable = false, nullable = false)
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
@@ -29,11 +35,14 @@ public class RoleEntity extends BaseEntity {
             CascadeType.PERSIST,
             CascadeType.MERGE
     }, mappedBy = "roles")
+    @JsonIgnore
     private Set<UserEntity> users = new HashSet<>();
+
     public Set<UserEntity> getUsers() {
         return users;
     }
-    public void setUsers(Set<UserEntity> users) {
+
+    public void setUsers(final Set<UserEntity> users) {
         this.users = users;
     }
 }
