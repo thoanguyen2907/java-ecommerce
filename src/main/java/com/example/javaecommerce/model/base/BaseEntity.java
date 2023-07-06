@@ -31,7 +31,7 @@ public abstract class BaseEntity {
     @JsonIgnore
     private Date modifiedDate;
 
-    @Column(name = "created_dby")
+    @Column(name = "created_by")
     @CreatedBy
     @JsonIgnore
     private String createdBy;

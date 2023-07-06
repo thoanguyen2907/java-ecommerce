@@ -1,7 +1,5 @@
 package com.example.javaecommerce.controller;
 
-import com.example.javaecommerce.exception.EcommerceRunTimeException;
-import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.model.request.ProductRequest;
 import com.example.javaecommerce.model.request.RequestDTO;
 import com.example.javaecommerce.model.response.ProductResponse;
@@ -9,13 +7,11 @@ import com.example.javaecommerce.pagination.PaginationPage;
 
 import com.example.javaecommerce.services.ProductService;
 
-import com.example.javaecommerce.utils.CheckAuthorized;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,12 +36,7 @@ public class ProductController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> addProduct(@RequestBody final ProductRequest productRequest) {
-        boolean isAdmin = CheckAuthorized.isAuthorized("ADMIN");
-        if (!isAdmin) {
-            throw new EcommerceRunTimeException(ErrorCode.UNAUTHORIZED);
-        }
         ProductResponse productResponse = productService.addProduct(productRequest);
         return new ResponseEntity<>(productResponse, HttpStatus.OK);
     }

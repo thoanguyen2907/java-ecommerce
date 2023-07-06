@@ -4,7 +4,6 @@ import com.example.javaecommerce.model.request.OrderRequest;
 import com.example.javaecommerce.model.response.OrderResponse;
 import com.example.javaecommerce.services.OrderService;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,6 @@ public class OrderController {
         return ResponseEntity.ok(orderResponse);
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
     public OrderResponse addOrder(@RequestBody final OrderRequest orderRequest) {
         return orderService.addOrder(orderRequest);

@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 public class ProductEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "id", updatable = false, nullable = false)
+    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
     @NotBlank(message = "name must not be empty")
     private String name;
@@ -35,7 +35,7 @@ public class ProductEntity extends BaseEntity {
     @NotNull(message = "number of stock may not be empty")
     private int countInStock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 }

@@ -1,6 +1,7 @@
 package com.example.javaecommerce.mapper;
 
 import com.example.javaecommerce.model.entity.ProductEntity;
+import com.example.javaecommerce.model.request.ProductRequest;
 import com.example.javaecommerce.model.response.ProductResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,6 +12,9 @@ import java.util.List;
 public interface ProductMapper {
     @Mapping(source = "productEntity.category.name", target = "categoryName")
     ProductResponse toProductResponse(ProductEntity productEntity);
+
+    @Mapping(source = "productRequest.categoryId", target = "category.id")
+    ProductEntity toProductEntity(ProductRequest productRequest);
 
     @Mapping(source = "productEntity.category.name", target = "categoryName")
     List<ProductResponse> toListProductResponse(List<ProductEntity> productEntityList);
