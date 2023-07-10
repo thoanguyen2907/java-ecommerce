@@ -1,2 +1,3 @@
-package com.example.javaecommerce.event;public class EmailSendingFailureEvent {
+package com.example.javaecommerce.event;
+public class EmailSendingFailureEvent {
 }

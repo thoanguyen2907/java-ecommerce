@@ -1,2 +1,3 @@
-package com.example.javaecommerce.event.listener;public class EmailSendingFailureEventListener {
+package com.example.javaecommerce.event.listener;
+public class EmailSendingFailureEventListener {
 }
