@@ -1,5 +1,6 @@
 package com.example.javaecommerce.services.impl;
 
+import com.example.javaecommerce.converter.Converter;
 import com.example.javaecommerce.exception.EcommerceRunTimeException;
 import com.example.javaecommerce.exception.ErrorCode;
 import com.example.javaecommerce.mapper.ProductMapper;
@@ -73,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse addProduct(final ProductRequest productRequest) {
-        ProductEntity productEntity = productMapper.toProductEntity(productRequest);
+        ProductEntity productEntity = Converter.toModel(productRequest, ProductEntity.class);
         CategoryEntity category = categoryRepository.findById(productRequest.getCategoryId())
                 .orElseThrow(() -> new EcommerceRunTimeException(ErrorCode.ID_NOT_FOUND)
                 );
