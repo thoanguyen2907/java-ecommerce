@@ -12,9 +12,14 @@ This project is an eCommerce application that provides RESTful APIs for managing
     - Establishing relationships among tables/entities
 - Request and Response Handling:
     - Customizing data requests and responses to ensure clean and organized data using MapStruct
+- Error Handling Customisation
 - Swagger documentation 
 - Dockerization:
     - Docker image available on Docker Hub: [thoanguyen2907/thoa-ecommerce-project:v3](https://hub.docker.com/r/thoanguyen2907/thoa-ecommerce-project)
+## Documentation
+
+For detailed API documentation and examples, please refer to the [API Documentation](http://ecommerce-spring-boot-env-1.eba-y6sgqjfz.eu-north-1.elasticbeanstalk.com/swagger-ui/index.html#/) file.
+
 
 ## Getting Started
 
@@ -46,9 +51,5 @@ If you prefer to use Docker, you can pull the Docker image from Docker Hub
 
 
 The application will be accessible at [http://localhost:8080](http://localhost:8080).
-
-## Documentation
-
-For detailed API documentation and examples, please refer to the [API Documentation](http://localhost:8080/swagger-ui/index.html) file.
 
 
