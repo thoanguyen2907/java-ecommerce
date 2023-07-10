@@ -72,12 +72,12 @@ public class WebSecurityConfig {
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/api/v1/products/**").permitAll()
-                .antMatchers("/api/v1/users/**").permitAll()
-                .antMatchers("/api/v1/category/**").permitAll()
-                .antMatchers("/api/v1/roles/**").permitAll()
-                .antMatchers("/api/auth/verifyRegistration/**").permitAll();
+                .antMatchers("/api/auth/verifyRegistration/**").permitAll()
+                .requestMatchers(publicEndpoints()).permitAll()
+                .requestMatchers(privateEndpoints()).authenticated()
+                .anyRequest().authenticated();
 
+        http.authenticationProvider(authenticationProvider());
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

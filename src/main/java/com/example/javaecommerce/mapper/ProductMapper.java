@@ -19,6 +19,4 @@ public interface ProductMapper {
     @Mapping(source = "productEntity.category.name", target = "categoryName")
     List<ProductResponse> toListProductResponse(List<ProductEntity> productEntityList);
 
-    @Mapping(source = "productRequest.categoryId", target = "ProductEntity.category.id")
-    ProductEntity toProductEntity(ProductRequest productRequest);
 }

@@ -118,7 +118,6 @@ public class ProductServiceImpl implements ProductService {
         int currentRating = productEntity.getRating();
         int averageRating = (currentRating + rating) / 2;
         productEntity.setRating(averageRating);
-        // reviewEntity.setProduct(productEntity);
         return averageRating;
     }
 
