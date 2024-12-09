@@ -30,18 +30,21 @@ public class UserController {
     }
 
     @PostMapping
-    public UserResponse addUser(@RequestBody final UserRequest userRequest) {
-        return userService.addUser(userRequest);
+    public ResponseEntity<UserResponse> addUser(@RequestBody final UserRequest userRequest) {
+        var userResponse = userService.addUser(userRequest);
+        return ResponseEntity.ok(userResponse);
     }
 
     @DeleteMapping(path = "{userId}")
-    public void deleteUser(@PathVariable("userId") final Long userId) {
+    public ResponseEntity<?> deleteUser(@PathVariable("userId") final Long userId) {
         userService.deleteUser(userId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping
-    public UserResponse updateUser(@RequestBody final UserRequest userRequest, final Long id) {
-        return userService.updateUser(userRequest, id);
+    public ResponseEntity<UserResponse> updateUser(@RequestBody final UserRequest userRequest, final Long id) {
+        var userResponse = userService.updateUser(userRequest, id);
+        return ResponseEntity.ok(userResponse);
     }
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {

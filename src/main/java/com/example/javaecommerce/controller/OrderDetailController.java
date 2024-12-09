@@ -22,17 +22,20 @@ public class OrderDetailController {
     }
 
     @PostMapping
-    public OrderDetailResponse addOrderDetail(@RequestBody final OrderDetailRequest orderDetailRequest) {
-        return orderDetailService.addOrderDetail(orderDetailRequest);
+    public ResponseEntity<OrderDetailResponse> addOrderDetail(@RequestBody final OrderDetailRequest orderDetailRequest) {
+        var orderDetailResponse = orderDetailService.addOrderDetail(orderDetailRequest);
+        return ResponseEntity.ok(orderDetailResponse);
     }
 
     @DeleteMapping(path = "{orderDetailId}")
-    public void deleteOrderDetail(@PathVariable("orderDetailId") final Long orderDetailId) throws Exception {
+    public ResponseEntity<?> deleteOrderDetail(@PathVariable("orderDetailId") final Long orderDetailId) throws Exception {
         orderDetailService.deleteOrderDetail(orderDetailId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping
-    public OrderDetailResponse updateOrderDetail(@RequestBody final OrderDetailRequest orderDetailRequest, final Long id) {
-        return orderDetailService.updateOrderDetail(orderDetailRequest, id);
+    public ResponseEntity<OrderDetailResponse> updateOrderDetail(@RequestBody final OrderDetailRequest orderDetailRequest, final Long id) {
+        var orderDetailResponse = orderDetailService.updateOrderDetail(orderDetailRequest, id);
+        return ResponseEntity.ok(orderDetailResponse);
     }
 }

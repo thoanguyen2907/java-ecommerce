@@ -18,10 +18,10 @@ import javax.validation.Valid;
 public class CategoryController {
     private final CategoryService categoryService;
 
-
     @GetMapping
-    public PaginationPage<CategoryResponse> getAllCategoriesPagination(@RequestParam(name = "offset", defaultValue = "0") final Integer offset,
-                                                                       @RequestParam(name = "limit", defaultValue = "10") final Integer limit) {
+    public PaginationPage<CategoryResponse> getAllCategoriesPagination(
+            @RequestParam(name = "offset", defaultValue = "0") final Integer offset,
+            @RequestParam(name = "limit", defaultValue = "10") final Integer limit) {
         var categoryList = categoryService.getAllCategoriesPagination(offset, limit);
         return categoryList;
     }
@@ -39,17 +39,13 @@ public class CategoryController {
 
     @DeleteMapping(path = "{categoryId}")
     public ResponseEntity<?> deleteCategory(@PathVariable("categoryId") final Long categoryId) throws Exception {
-        try {
-            categoryService.deleteCategory(categoryId);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("product is existed");
-        }
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping(path = "{categoryId}")
     public ResponseEntity<?> updateCategory(@Valid @RequestBody final CategoryRequest categoryRequest,
-                                            @PathVariable final Long categoryId) {
+            @PathVariable final Long categoryId) {
         CategoryResponse categoryResponse = categoryService.updateCategory(categoryRequest, categoryId);
         return ResponseEntity.ok(categoryResponse);
     }

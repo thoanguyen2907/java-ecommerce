@@ -3,8 +3,6 @@ package com.example.javaecommerce.controller;
 import com.example.javaecommerce.model.request.OrderRequest;
 import com.example.javaecommerce.model.response.OrderResponse;
 import com.example.javaecommerce.services.OrderService;
-
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -25,19 +23,21 @@ public class OrderController {
         return ResponseEntity.ok(orderResponse);
     }
 
-    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping
-    public OrderResponse addOrder(@RequestBody final OrderRequest orderRequest) {
-        return orderService.addOrder(orderRequest);
+    public ResponseEntity<OrderResponse> addOrder(@RequestBody final OrderRequest orderRequest) {
+        var orderResponse = orderService.addOrder(orderRequest);
+        return ResponseEntity.ok(orderResponse);
     }
 
     @DeleteMapping(path = "{orderId}")
-    public void deleteOrder(@PathVariable("orderId") final Long orderId) throws Exception {
+    public ResponseEntity<?> deleteOrder(@PathVariable("orderId") final Long orderId) throws Exception {
         orderService.deleteOrder(orderId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping
-    public OrderResponse updateOrder(@RequestBody final OrderRequest orderRequest, final Long id) {
-        return orderService.updateOrder(orderRequest, id);
+    public ResponseEntity<OrderResponse> updateOrder(@RequestBody final OrderRequest orderRequest, final Long id) {
+        var orderResponse = orderService.updateOrder(orderRequest, id);
+        return ResponseEntity.ok(orderResponse);
     }
 }

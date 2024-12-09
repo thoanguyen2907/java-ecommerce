@@ -7,7 +7,7 @@ import com.example.javaecommerce.model.request.SignupRequest;
 
 import com.example.javaecommerce.security.jwt.AuthEntryPointJwt;
 import com.example.javaecommerce.services.UserService;
-;
+
 import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;

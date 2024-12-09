@@ -22,24 +22,27 @@ public class RoleController {
     }
 
     @PostMapping
-    public RoleResponse addRole(@RequestBody final RoleRequest roleRequest) {
-        return roleService.addRole(roleRequest);
+    public ResponseEntity<RoleResponse> addRole(@RequestBody final RoleRequest roleRequest) {
+        var roleResponse =  roleService.addRole(roleRequest);
+        return ResponseEntity.ok(roleResponse);
     }
 
     @PostMapping("/users/{userId}/")
-    public RoleResponse addRoleForUser(@PathVariable(value = "userId") final Long userId,
+    public ResponseEntity<RoleResponse> addRoleForUser(@PathVariable(value = "userId") final Long userId,
                                        final RoleRequest roleRequest) {
-        RoleResponse role = roleService.addRoleForUser(userId, roleRequest);
-        return role;
+        var roleResponse = roleService.addRoleForUser(userId, roleRequest);
+        return ResponseEntity.ok(roleResponse);
     }
 
     @DeleteMapping(path = "{roleId}")
-    public void deleteRole(@PathVariable("roleId") final Long roleId) throws Exception {
+    public ResponseEntity<?> deleteRole(@PathVariable("roleId") final Long roleId) throws Exception {
         roleService.deleteRole(roleId);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping
-    public RoleResponse updateRole(@RequestBody final RoleRequest roleRequest, final Long id) {
-        return roleService.updateRole(roleRequest, id);
+    public ResponseEntity<RoleResponse> updateRole(@RequestBody final RoleRequest roleRequest, final Long id) {
+        var roleResponse = roleService.updateRole(roleRequest, id);
+        return ResponseEntity.ok(roleResponse);
     }
 }
